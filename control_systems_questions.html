@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A1.3.6 – A1.3.7 · Control Systems Review · NLCS Jeju</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #1e2a3a;
+    --navy-deep: #161f2c;
+    --navy-hover: #2a3a52;
+    --accent-blue: #3b82f6;
+    --accent-blue-soft: #dbeafe;
+    --bg: #f1f3f6;
+    --card: #ffffff;
+    --border: #e2e6ec;
+    --border-strong: #cbd2dc;
+    --text: #1e2a3a;
+    --text-muted: #6b7585;
+    --text-faint: #9aa3b2;
+    --tag-bg: #dbeafe;
+    --tag-text: #1d4ed8;
+    --tag-purple-bg: #ede9fe;
+    --tag-purple-text: #6d28d9;
+    --success: #16a34a;
+    --error: #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.55;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ===== HEADER ===== */
+  header {
+    background: var(--navy);
+    color: #fff;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+    margin-right: 1rem;
+  }
+
+  .brand-main {
+    font-weight: 800;
+    font-size: 0.95rem;
+    letter-spacing: 0.02em;
+  }
+
+  .brand-sub {
+    font-weight: 500;
+    font-size: 0.65rem;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+  }
+
+  .divider {
+    width: 1px;
+    height: 28px;
+    background: rgba(255,255,255,0.15);
+  }
+
+  nav.tabs {
+    display: flex;
+    gap: 0.25rem;
+    flex: 1;
+  }
+
+  nav.tabs a {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.65);
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background 0.15s, color 0.15s;
+  }
+
+  nav.tabs a:hover { color: #fff; background: var(--navy-hover); }
+  nav.tabs a.active { background: var(--accent-blue); color: #fff; }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .search-mock {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    color: rgba(255,255,255,0.5);
+    width: 200px;
+  }
+
+  .staff-link {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: rgba(255,255,255,0.7);
+    text-decoration: none;
+  }
+
+  .staff-link:hover { color: #fff; }
+
+  /* ===== PAGE HEADER ===== */
+  .page-wrap {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .page-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .page-title {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .title-dot {
+    width: 10px;
+    height: 10px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+    display: inline-block;
+  }
+
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tag-blue { background: var(--tag-bg); color: var(--tag-text); }
+  .tag-purple { background: var(--tag-purple-bg); color: var(--tag-purple-text); }
+
+  .page-meta {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  .page-rule {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 2rem;
+  }
+
+  .page-intro {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .page-intro strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* ===== STUDENT INFO ===== */
+  .info-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .info-card label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+  }
+
+  .info-card input {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s;
+  }
+
+  .info-card input:focus {
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-soft);
+  }
+
+  /* ===== SECTIONS / CARDS ===== */
+  .section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+  }
+
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-title-row {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .section-title {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+  }
+
+  .section-count {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .section-body {
+    padding: 1.25rem;
+  }
+
+  /* ===== QUESTIONS (sub-card style like Task Folder) ===== */
+  .q {
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 0.85rem;
+    transition: border-color 0.15s;
+  }
+
+  .q:hover { border-color: var(--border-strong); }
+  .q:last-child { margin-bottom: 0; }
+
+  .q-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .q-label {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .q-num {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent-blue);
+  }
+
+  .q-text {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+  }
+
+  .q-text em {
+    font-style: italic;
+    color: var(--accent-blue);
+    font-weight: 500;
+  }
+
+  .q-hint {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 0.7rem;
+  }
+
+  .q-marks {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.5rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 0.7rem 0.85rem;
+    font-family: inherit;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    background: #fafbfc;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    resize: vertical;
+    outline: none;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+  }
+
+  textarea:focus {
+    background: #fff;
+    border-color: var(--accent-blue);
+    box-shadow: 0 0 0 3px var(--accent-blue-soft);
+  }
+
+  textarea.short { min-height: 60px; }
+  textarea.medium { min-height: 100px; }
+  textarea.long { min-height: 160px; }
+  textarea.xlong { min-height: 240px; }
+
+  /* ===== SCENARIO BOX ===== */
+  .scenario-box {
+    background: #f7f9fc;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-blue);
+    border-radius: 4px;
+    padding: 0.85rem 1rem;
+    margin: 0.5rem 0 0.85rem;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    color: var(--text);
+  }
+
+  .scenario-box strong.heading {
+    display: block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent-blue);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ===== EXAM CARD (subtle highlight) ===== */
+  .q-exam {
+    border: 1px solid var(--accent-blue);
+    background: #fbfcfe;
+  }
+
+  .q-exam .q-num { color: var(--navy); }
+
+  .exam-badge {
+    background: var(--accent-blue);
+    color: #fff;
+    padding: 0.2rem 0.55rem;
+    border-radius: 4px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ===== SUBMIT ===== */
+  .submit-card {
+    background: var(--navy);
+    color: #fff;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-top: 1.5rem;
+    text-align: center;
+  }
+
+  .submit-card h2 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+
+  .submit-card p {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 1.5rem;
+    max-width: 50ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .submit-btn {
+    font-family: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 0.7rem 2rem;
+    background: var(--accent-blue);
+    color: #fff;
+    border: 1px solid var(--accent-blue);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+  }
+
+  .submit-btn:hover { background: #2563eb; }
+  .submit-btn:active { transform: translateY(1px); }
+
+  .submit-btn:disabled {
+    background: rgba(255,255,255,0.15);
+    border-color: rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.5);
+    cursor: not-allowed;
+  }
+
+  .status {
+    margin-top: 1rem;
+    font-size: 0.85rem;
+    min-height: 1.4em;
+  }
+
+  .status.success { color: #86efac; }
+  .status.error { color: #fca5a5; }
+
+  /* ===== PROGRESS BAR ===== */
+  .progress-rail {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: transparent;
+    z-index: 90;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent-blue);
+    width: 0;
+    transition: width 0.2s;
+  }
+
+  /* ===== AUTOSAVE INDICATOR ===== */
+  .autosave-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .autosave-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .autosave-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    transition: background 0.2s;
+  }
+
+  .autosave-dot.saving { background: #f59e0b; animation: pulse 0.6s ease-in-out infinite alternate; }
+  .autosave-dot.never { background: var(--text-faint); }
+
+  @keyframes pulse {
+    from { opacity: 0.4; }
+    to { opacity: 1; }
+  }
+
+  .clear-btn {
+    font-family: inherit;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--border-strong);
+    padding: 0.3rem 0.7rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+
+  .clear-btn:hover {
+    color: var(--error);
+    border-color: var(--error);
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    text-align: center;
+    padding: 2rem 1rem;
+    font-size: 0.8rem;
+    color: var(--text-faint);
+    border-top: 1px solid var(--border);
+    margin-top: 3rem;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 900px) {
+    .header-right .search-mock { display: none; }
+    nav.tabs { overflow-x: auto; }
+  }
+
+  @media (max-width: 640px) {
+    header { padding: 0 1rem; gap: 1rem; }
+    .brand-sub { display: none; }
+    .info-card { grid-template-columns: 1fr; }
+    .page-wrap { padding: 1.25rem 1rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <span class="brand-main">NLCS JEJU</span>
+    <span class="brand-sub">Computer Science</span>
+  </div>
+  <div class="divider"></div>
+  <nav class="tabs">
+    <a href="#">Year 5</a>
+    <a href="#">Year 6</a>
+    <a href="#">Year 8</a>
+    <a href="#">Year 9</a>
+    <a href="#">IGCSE</a>
+    <a href="#" class="active">IB</a>
+  </nav>
+  <div class="header-right">
+    <div class="search-mock">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="M21 21l-4.35-4.35"></path></svg>
+      <span>Search resources</span>
+    </div>
+    <a href="#" class="staff-link">STAFF ↗</a>
+  </div>
+</header>
+
+<div class="progress-rail"><div class="progress-fill" id="progressFill"></div></div>
+
+<div class="page-wrap">
+
+  <!-- PAGE HEADER -->
+  <div class="page-head">
+    <div class="page-title">
+      <span class="title-dot"></span>
+      <span>A1.3 Control Systems</span>
+      <span class="tag tag-blue">IB HL</span>
+      <span class="tag tag-purple">Review Task</span>
+    </div>
+    <div class="page-meta">Sections A1.3.6 – A1.3.7 · 15 questions</div>
+  </div>
+  <div class="page-rule"></div>
+
+  <div class="page-intro">
+    Work through the questions <strong>in order</strong>. Each section builds on the one before, so don't skip ahead. The final question is an <strong>exam-style synthesis question</strong> worth 12 marks — apply everything you have learned from your reading. Your progress is <strong>autosaved in your browser</strong> as you type, so you can close the tab and come back later.
+  </div>
+
+  <form id="reviewForm">
+
+    <!-- AUTOSAVE INDICATOR -->
+    <div class="autosave-bar">
+      <div class="autosave-left">
+        <span class="autosave-dot never" id="saveDot"></span>
+        <span id="saveText">Autosave ready</span>
+      </div>
+      <button type="button" class="clear-btn" id="clearBtn">Clear saved draft</button>
+    </div>
+
+    <!-- STUDENT INFO -->
+    <div class="info-card">
+      <div>
+        <label>Student name</label>
+        <input type="text" name="studentName" placeholder="First Last" required>
+      </div>
+      <div>
+        <label>Class / Year group</label>
+        <input type="text" name="studentClass" placeholder="e.g. Year 13 HL" required>
+      </div>
+    </div>
+
+    <!-- SECTION 1 -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title-row">
+          <span class="title-dot"></span>
+          <span class="section-title">Part 1 — Building blocks</span>
+        </div>
+        <span class="section-count">4 questions · Recall</span>
+      </div>
+      <div class="section-body">
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q1</span></div>
+            <span class="q-marks">2 marks</span>
+          </div>
+          <div class="q-text">In a control system, define the term <em>input</em> in your own words.</div>
+          <div class="q-hint">Look back at A1.3.6 if you need to.</div>
+          <textarea name="q1" class="short" placeholder="The input is..."></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q2</span></div>
+            <span class="q-marks">2 marks</span>
+          </div>
+          <div class="q-text">State the <em>four</em> main parts of any control system (input, process, output, feedback) and write a one-line job description for each.</div>
+          <textarea name="q2" class="medium" placeholder="Input —&#10;Process —&#10;Output —&#10;Feedback —"></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q3</span></div>
+            <span class="q-marks">2 marks</span>
+          </div>
+          <div class="q-text">Name <em>two</em> different types of sensor shown in your reading, and what each one measures.</div>
+          <textarea name="q3" class="short" placeholder="1.&#10;2."></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q4</span></div>
+            <span class="q-marks">2 marks</span>
+          </div>
+          <div class="q-text">What is meant by a <em>control algorithm</em>?</div>
+          <textarea name="q4" class="short" placeholder=""></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 2 -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title-row">
+          <span class="title-dot"></span>
+          <span class="section-title">Part 2 — Explaining the ideas</span>
+        </div>
+        <span class="section-count">4 questions · Explain</span>
+      </div>
+      <div class="section-body">
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q5</span></div>
+            <span class="q-marks">4 marks</span>
+          </div>
+          <div class="q-text">Explain the difference between an <em>open-loop</em> and a <em>closed-loop</em> control system. Include one example of each.</div>
+          <textarea name="q5" class="medium" placeholder="Open-loop:&#10;&#10;Closed-loop:&#10;&#10;Examples:"></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q6</span></div>
+            <span class="q-marks">3 marks</span>
+          </div>
+          <div class="q-text">Describe the role of a <em>sensor</em>, an <em>actuator</em>, and a <em>transducer</em> in a control system. Use the analogy from your reading (eyes/ears, muscles, translator).</div>
+          <textarea name="q6" class="medium" placeholder="Sensor:&#10;Actuator:&#10;Transducer:"></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q7</span></div>
+            <span class="q-marks">3 marks</span>
+          </div>
+          <div class="q-text">Explain the role of the <em>controller</em> in a control system. Why is it called the "brain" of the system?</div>
+          <textarea name="q7" class="medium" placeholder=""></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q8</span></div>
+            <span class="q-marks">3 marks</span>
+          </div>
+          <div class="q-text">Why is the <em>feedback loop</em> so important in a closed-loop system? Describe what happens if the actual output drifts away from the desired input.</div>
+          <textarea name="q8" class="medium" placeholder=""></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 3 -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title-row">
+          <span class="title-dot"></span>
+          <span class="section-title">Part 3 — Applying to real systems</span>
+        </div>
+        <span class="section-count">4 questions · Apply</span>
+      </div>
+      <div class="section-body">
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q9</span></div>
+            <span class="q-marks">5 marks</span>
+          </div>
+          <div class="q-text">For a <em>home thermostat</em>, identify each of the following and explain its job:</div>
+          <div class="scenario-box">
+            <strong class="heading">Identify each part</strong>
+            a) The input &nbsp;·&nbsp; b) The sensor &nbsp;·&nbsp; c) The controller &nbsp;·&nbsp; d) The actuator &nbsp;·&nbsp; e) The feedback signal
+          </div>
+          <textarea name="q9" class="long" placeholder="a) Input:&#10;b) Sensor:&#10;c) Controller:&#10;d) Actuator:&#10;e) Feedback signal:"></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q10</span></div>
+            <span class="q-marks">4 marks</span>
+          </div>
+          <div class="q-text">A simple oven timer (set to 10 minutes, then beep) is an <em>open-loop</em> system. A modern oven that maintains 180°C is a <em>closed-loop</em> system. Explain why the closed-loop version produces better cooking results.</div>
+          <textarea name="q10" class="medium" placeholder=""></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q11</span></div>
+            <span class="q-marks">5 marks</span>
+          </div>
+          <div class="q-text">Describe how an <em>automatic washing machine</em> works as a control system. In your answer, identify at least one sensor, one actuator, and explain what feedback is used to decide when the wash cycle has finished.</div>
+          <textarea name="q11" class="long" placeholder=""></textarea>
+        </div>
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q12</span></div>
+            <span class="q-marks">4 marks</span>
+          </div>
+          <div class="q-text">A <em>traffic-signal control system</em> at a busy intersection adjusts the timing of green lights based on how many cars are waiting. Explain how this is an example of a closed-loop control system, and what would go wrong if it were open-loop instead.</div>
+          <textarea name="q12" class="medium" placeholder=""></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 4 -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title-row">
+          <span class="title-dot"></span>
+          <span class="section-title">Part 4 — Analyse & compare</span>
+        </div>
+        <span class="section-count">1 question · Analyse</span>
+      </div>
+      <div class="section-body">
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q13</span></div>
+            <span class="q-marks">6 marks</span>
+          </div>
+          <div class="q-text">Compare the control system in an <em>automatic washing machine</em> with the one in an <em>autonomous (self-driving) vehicle</em>. In your answer, comment on:</div>
+          <div class="scenario-box">
+            <strong class="heading">Compare in terms of</strong>
+            • Number and type of sensors used &nbsp;·&nbsp; • Complexity of the control algorithm &nbsp;·&nbsp; • Consequences of system failure &nbsp;·&nbsp; • Why both still rely on closed-loop feedback
+          </div>
+          <textarea name="q13" class="long" placeholder=""></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 5 - EXAM -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title-row">
+          <span class="title-dot" style="background: var(--accent-blue);"></span>
+          <span class="section-title">Part 5 — Exam-style synthesis question</span>
+        </div>
+        <span class="exam-badge">12 marks</span>
+      </div>
+      <div class="section-body">
+
+        <div class="q q-exam">
+          <div class="q-row">
+            <div class="q-label">
+              <span class="q-num">Q14</span>
+              <span class="exam-badge">EXAM STYLE</span>
+            </div>
+            <span class="q-marks">12 marks</span>
+          </div>
+
+          <div class="scenario-box">
+            <strong class="heading">Scenario</strong>
+            A large international school in Seoul is installing an <em>automated greenhouse</em> on the roof to grow vegetables for the cafeteria. The greenhouse must:
+            <br><br>
+            • Maintain air temperature between 18–24°C using heaters and motorised roof vents<br>
+            • Water the plants automatically when soil moisture drops below a set threshold<br>
+            • Open or close the blinds depending on how much sunlight is hitting the leaves<br>
+            • Display the current temperature, moisture and light readings on a screen for the gardener
+            <br><br>
+            The gardener wants the system to be reliable, energy-efficient, and able to adapt to changing weather conditions throughout the year.
+          </div>
+
+          <div class="q-text" style="margin-top: 1rem;">Discuss how this automated greenhouse can be designed as a <em>control system</em>. Justify your choices throughout.</div>
+
+          <div class="scenario-box" style="border-left-color: var(--tag-purple-text); background: #faf8ff;">
+            <strong class="heading" style="color: var(--tag-purple-text);">Mark scheme — your answer should include</strong>
+            • Identification of <em>input, process, output and feedback</em> for at least one of the three sub-systems<br>
+            • Specific <em>sensors</em> you would use, and what each one measures<br>
+            • Specific <em>actuators</em> the controller would send commands to<br>
+            • An example of a <em>transducer</em> in the system and why it is needed<br>
+            • A clear explanation of why <em>closed-loop feedback</em> is essential here<br>
+            • A brief comment on the <em>control algorithm</em> — simple on/off vs PID, and why
+          </div>
+
+          <textarea name="q14" class="xlong" placeholder="Plan your answer first, then write in full sentences. Aim for around 300–400 words."></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECTION 6 - REFLECTION -->
+    <div class="section">
+      <div class="section-head">
+        <div class="section-title-row">
+          <span class="title-dot"></span>
+          <span class="section-title">Part 6 — Reflection</span>
+        </div>
+        <span class="section-count">Optional</span>
+      </div>
+      <div class="section-body">
+
+        <div class="q">
+          <div class="q-row">
+            <div class="q-label"><span class="q-num">Q15</span></div>
+          </div>
+          <div class="q-text">Which idea from this topic did you find <em>hardest</em>, and what would help you understand it better?</div>
+          <textarea name="q15" class="short" placeholder=""></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SUBMIT -->
+    <div class="submit-card">
+      <h2>Ready to submit?</h2>
+      <p>Check your name and class are filled in. Once submitted, your answers go straight to your teacher's marking sheet.</p>
+      <button type="submit" class="submit-btn" id="submitBtn">Submit answers →</button>
+      <div class="status" id="status"></div>
+    </div>
+
+  </form>
+
+</div>
+
+<footer>
+  NLCS Jeju — Computer Science Department · A1.3 Control Systems Review
+</footer>
+
+<script>
+  // ====== ELEMENTS ======
+  const allTextareas = document.querySelectorAll('textarea');
+  const allInputs = document.querySelectorAll('input[type="text"]');
+  const allFields = [...allTextareas, ...allInputs];
+  const progressFill = document.getElementById('progressFill');
+  const saveDot = document.getElementById('saveDot');
+  const saveText = document.getElementById('saveText');
+  const clearBtn = document.getElementById('clearBtn');
+  const form = document.getElementById('reviewForm');
+  const submitBtn = document.getElementById('submitBtn');
+  const status = document.getElementById('status');
+
+  // ====== AUTOSAVE (localStorage) ======
+  const STORAGE_KEY = 'a1_3_control_systems_draft_v1';
+  let saveTimer = null;
+
+  function formatTime(date) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function setSaveStatus(state, timeStr) {
+    saveDot.className = 'autosave-dot ' + (state === 'saved' ? '' : state);
+    if (state === 'saving') saveText.textContent = 'Saving…';
+    else if (state === 'saved') saveText.textContent = 'Saved at ' + timeStr;
+    else if (state === 'never') saveText.textContent = 'Autosave ready';
+    else if (state === 'submitted') saveText.textContent = 'Submitted — draft kept for review';
+  }
+
+  function collectData() {
+    const data = {};
+    allFields.forEach(f => { data[f.name] = f.value; });
+    return data;
+  }
+
+  function saveDraft() {
+    try {
+      const payload = {
+        savedAt: new Date().toISOString(),
+        data: collectData()
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      setSaveStatus('saved', formatTime(new Date()));
+    } catch (err) {
+      saveText.textContent = 'Save failed — copy your answers!';
+      saveDot.className = 'autosave-dot never';
+    }
+  }
+
+  function restoreDraft() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      const payload = JSON.parse(raw);
+      if (!payload || !payload.data) return;
+
+      allFields.forEach(f => {
+        if (payload.data[f.name] !== undefined) f.value = payload.data[f.name];
+      });
+
+      const when = new Date(payload.savedAt);
+      setSaveStatus('saved', formatTime(when));
+      updateProgress();
+    } catch (err) {
+      console.warn('Could not restore draft:', err);
+    }
+  }
+
+  function debouncedSave() {
+    setSaveStatus('saving');
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(saveDraft, 600);
+  }
+
+  // ====== PROGRESS BAR ======
+  function updateProgress() {
+    const total = allFields.length;
+    let filled = 0;
+    allFields.forEach(f => { if (f.value.trim().length > 0) filled++; });
+    progressFill.style.width = (filled / total * 100) + '%';
+  }
+
+  // ====== WIRE UP EVENTS ======
+  allFields.forEach(f => {
+    f.addEventListener('input', () => {
+      updateProgress();
+      debouncedSave();
+    });
+  });
+
+  clearBtn.addEventListener('click', () => {
+    const confirmClear = confirm('Clear your saved draft? This will empty all the boxes on this page. You cannot undo this.');
+    if (!confirmClear) return;
+    localStorage.removeItem(STORAGE_KEY);
+    allFields.forEach(f => { f.value = ''; });
+    updateProgress();
+    setSaveStatus('never');
+  });
+
+  // Restore on page load
+  restoreDraft();
+
+  // ====== SUBMISSION ======
+  // !!! TEACHER: paste your Google Apps Script Web App URL here !!!
+  const APPS_SCRIPT_URL = 'PASTE_YOUR_WEB_APP_URL_HERE';
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const data = { timestamp: new Date().toISOString(), ...collectData() };
+
+    if (APPS_SCRIPT_URL === 'PASTE_YOUR_WEB_APP_URL_HERE') {
+      status.className = 'status error';
+      status.textContent = '⚠ Teacher has not finished setup yet. Your answers are NOT saved to the teacher. (They ARE saved in this browser as a draft.)';
+      console.log('Submission data (would be sent):', data);
+      return;
+    }
+
+    submitBtn.disabled = true;
+    status.className = 'status';
+    status.textContent = 'Submitting...';
+
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(data)
+      });
+
+      // Mark draft as submitted (but KEEP it so they can review)
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        const payload = raw ? JSON.parse(raw) : { data: collectData() };
+        payload.submittedAt = new Date().toISOString();
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+      } catch (e) { /* non-fatal */ }
+
+      status.className = 'status success';
+      status.textContent = '✓ Submitted. Well done. Your answers stay on this page so you can review them.';
+      submitBtn.textContent = 'Submitted ✓';
+      setSaveStatus('submitted');
+    } catch (err) {
+      status.className = 'status error';
+      status.textContent = '✗ Submission failed: ' + err.message + '. Please tell your teacher.';
+      submitBtn.disabled = false;
+    }
+  });
+</script>
+
+</body>
+</html>
