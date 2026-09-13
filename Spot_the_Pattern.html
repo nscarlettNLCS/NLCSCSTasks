@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot the Pattern</title>
+<style>
+  :root{
+    --paper:#F2F4F8;
+    --ink:#2F3C7E;
+    --ink-deep:#1D2650;
+    --body:#3A3A45;
+    --muted:#6B7280;
+    --line:#D8DEEA;
+    --card:#FFFFFF;
+    --red:#F0524B;
+    --green:#2FB457;
+    --blue:#3B6BE5;
+    --amber:#FFC43D;
+    --grape:#9B5DE5;
+    --ok:#15803D;
+    --ok-bg:#E8F6ED;
+    --no:#B4322C;
+    --no-bg:#FDECEB;
+  }
+
+  *{box-sizing:border-box}
+
+  html,body{margin:0;padding:0}
+
+  body{
+    background:var(--paper);
+    color:var(--body);
+    font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:17px;
+    line-height:1.55;
+    padding:28px 18px 64px;
+  }
+
+  .wrap{max-width:860px;margin:0 auto}
+
+  /* ---------- header ---------- */
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    flex-wrap:wrap;
+    padding-bottom:14px;
+    border-bottom:3px solid var(--ink);
+    margin-bottom:26px;
+  }
+  h1{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:31px;
+    line-height:1.1;
+    color:var(--ink);
+    margin:0;
+    letter-spacing:-.01em;
+  }
+  .tagline{
+    margin:5px 0 0;
+    color:var(--muted);
+    font-size:15.5px;
+  }
+
+  .track{display:flex;gap:7px;align-items:center}
+  .pip{
+    width:22px;height:22px;border-radius:50%;
+    border:2.5px solid var(--line);
+    background:var(--card);
+    display:grid;place-items:center;
+    font-size:11.5px;font-weight:700;color:var(--muted);
+  }
+  .pip.now{border-color:var(--ink);color:var(--ink)}
+  .pip.got{background:var(--ok);border-color:var(--ok);color:#fff}
+  .pip.miss{background:var(--no);border-color:var(--no);color:#fff}
+
+  /* ---------- puzzle ---------- */
+  .panel{
+    background:var(--card);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:24px 24px 26px;
+  }
+
+  .step{
+    font-size:14px;
+    font-weight:700;
+    color:var(--grape);
+    margin:0 0 4px;
+  }
+  h2{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:25px;
+    color:var(--ink);
+    margin:0 0 8px;
+    line-height:1.2;
+  }
+  .brief{margin:0 0 22px;max-width:62ch}
+
+  .stage{
+    background:var(--paper);
+    border-radius:10px;
+    padding:20px 16px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:14px;
+    overflow-x:auto;
+  }
+  .seq{display:flex;align-items:flex-end;gap:18px}
+  .item{display:flex;flex-direction:column;align-items:center;gap:7px}
+  .tag{font-size:13px;font-weight:700;color:var(--muted)}
+  .mystery{
+    width:52px;height:52px;border-radius:10px;
+    border:2.5px dashed var(--ink);
+    display:grid;place-items:center;
+    font-family:Georgia,serif;font-size:26px;font-weight:700;color:var(--ink);
+    align-self:center;
+  }
+  .rowstack{display:flex;flex-direction:column;gap:7px;align-items:flex-start}
+  .rowline{display:flex;align-items:center;gap:11px}
+  .rownum{
+    font-size:13px;font-weight:700;color:var(--muted);
+    width:20px;text-align:right;flex:none;
+  }
+  svg{display:block}
+
+  .ask{
+    margin:26px 0 14px;
+    font-weight:700;
+    color:var(--ink);
+    font-size:18px;
+  }
+
+  .opts{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+    gap:12px;
+  }
+  .opt{
+    font:inherit;
+    background:var(--card);
+    border:2.5px solid var(--line);
+    border-radius:12px;
+    padding:16px 12px 13px;
+    cursor:pointer;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    transition:border-color .12s ease, background .12s ease;
+  }
+  .opt:hover:not(:disabled){border-color:var(--ink)}
+  .opt:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  .opt:disabled{cursor:default}
+  .opt .letter{
+    font-size:13.5px;font-weight:700;color:var(--muted);
+  }
+  .opt.right{border-color:var(--ok);background:var(--ok-bg)}
+  .opt.right .letter{color:var(--ok)}
+  .opt.wrong{border-color:var(--no);background:var(--no-bg)}
+  .opt.wrong .letter{color:var(--no)}
+
+  .verdict{
+    margin-top:20px;
+    border-left:5px solid var(--ink);
+    background:var(--paper);
+    border-radius:0 10px 10px 0;
+    padding:15px 18px;
+  }
+  .verdict.good{border-left-color:var(--ok)}
+  .verdict.bad{border-left-color:var(--no)}
+  .verdict h3{
+    margin:0 0 6px;
+    font-family:Georgia,serif;
+    font-size:18px;
+    color:var(--ink);
+  }
+  .verdict.good h3{color:var(--ok)}
+  .verdict.bad h3{color:var(--no)}
+  .verdict p{margin:0;max-width:64ch;font-size:16px}
+
+  .reveal{animation:rise .22s ease-out}
+  @keyframes rise{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){
+    .reveal{animation:none}
+    *{transition:none !important}
+  }
+
+  .bar{margin-top:22px;display:flex;justify-content:flex-end;gap:10px}
+  .btn{
+    font:inherit;font-weight:700;
+    background:var(--ink);color:#fff;
+    border:none;border-radius:10px;
+    padding:12px 24px;cursor:pointer;
+  }
+  .btn:hover{background:var(--ink-deep)}
+  .btn:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+  .btn.ghost{background:transparent;color:var(--ink);border:2.5px solid var(--line)}
+  .btn.ghost:hover{background:var(--paper);border-color:var(--ink)}
+
+  /* ---------- intro (sized to fit one screen) ---------- */
+
+  body.intro{padding-top:16px;padding-bottom:16px}
+  body.intro header{margin-bottom:14px;padding-bottom:10px}
+  body.intro h1{font-size:clamp(22px,2.6vh,29px)}
+  body.intro .tagline{display:none}
+  body.intro footer{display:none}
+  body.intro .panel{padding:clamp(14px,2.2vh,22px) 22px}
+
+  .lead{
+    font-size:clamp(15px,1.95vh,17.5px);
+    line-height:1.45;
+    max-width:78ch;
+    margin:0 0 clamp(10px,1.6vh,16px);
+  }
+  .lead b{color:var(--ink)}
+
+  .duo{
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:26px;
+    border-top:1.5px solid var(--line);
+    padding-top:clamp(12px,1.8vh,18px);
+  }
+  .duo h3{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:clamp(15.5px,2vh,18.5px);
+    color:var(--ink);
+    margin:0 0 10px;
+  }
+
+  .slab{
+    background:var(--ink-deep);
+    border-radius:9px;
+    padding:clamp(8px,1.3vh,13px) 15px;
+    color:#EEF1FA;
+    font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    font-size:clamp(11.5px,1.55vh,13.5px);
+    line-height:1.65;
+    white-space:pre;
+    overflow-x:auto;
+  }
+  .kw{color:var(--amber);font-weight:700}
+  .over{
+    font-size:12.5px;
+    font-weight:700;
+    color:var(--muted);
+    margin:0 0 5px;
+  }
+  .stackpair{display:flex;flex-direction:column;gap:clamp(7px,1.1vh,12px)}
+
+  .twin{
+    display:flex;
+    gap:30px;
+    align-items:flex-end;
+    flex-wrap:wrap;
+    margin:2px 0 0;
+  }
+  .twin .tag{font-size:12.5px}
+
+  .caption{
+    font-size:clamp(13px,1.7vh,15px);
+    line-height:1.45;
+    color:var(--muted);
+    margin:clamp(8px,1.3vh,13px) 0 0;
+  }
+  .caption b{color:var(--ink);font-weight:600}
+
+  .begin{
+    margin-top:clamp(12px,1.9vh,20px);
+    padding-top:clamp(11px,1.7vh,18px);
+    border-top:1.5px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .begin .btn{padding:clamp(9px,1.5vh,13px) 28px;font-size:clamp(15px,1.9vh,17px)}
+  .begin span{font-size:14px;color:var(--muted)}
+
+  /* narrow screens: let it stack and scroll rather than squash */
+  @media (max-width:700px){
+    .duo{grid-template-columns:1fr;gap:18px}
+    body.intro .tagline{display:block}
+  }
+
+  /* ---------- build-your-own ---------- */
+  .builder{display:flex;flex-direction:column;align-items:center;gap:12px}
+  .cellrow{display:flex;gap:0}
+  .cell{
+    width:44px;height:44px;
+    border:2.5px solid var(--ink);
+    background:#fff;
+    cursor:pointer;padding:0;
+    margin-left:-2.5px;
+  }
+  .cell:first-child{margin-left:0}
+  .cell.on{background:var(--red)}
+  .cell:focus-visible{outline:3px solid var(--amber);outline-offset:2px;position:relative;z-index:1}
+  .hintline{font-size:14.5px;color:var(--muted)}
+
+  /* ---------- results ---------- */
+  .tally{text-align:center;padding:14px 0 4px}
+  .tally .num{
+    font-family:Georgia,serif;
+    font-size:62px;line-height:1;
+    color:var(--ink);font-weight:700;
+  }
+  .tally .of{color:var(--muted);font-size:17px;margin-top:6px}
+  .tally .note{margin:16px auto 0;max-width:52ch}
+  .recap{
+    margin:24px 0 0;padding:0;list-style:none;
+    border-top:1.5px solid var(--line);
+  }
+  .recap li{
+    display:flex;gap:12px;align-items:baseline;
+    padding:11px 2px;border-bottom:1.5px solid var(--line);
+    font-size:16px;
+  }
+  .mark{font-weight:700;flex:none;width:18px}
+  .mark.y{color:var(--ok)}
+  .mark.n{color:var(--no)}
+
+  footer{
+    margin-top:22px;font-size:14px;color:var(--muted);
+    text-align:center;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div>
+      <h1>Spot the Pattern</h1>
+      <p class="tagline">Six puzzles. Work out the rule, then pick what comes next.</p>
+    </div>
+    <div class="track" id="track" aria-label="Progress"></div>
+  </header>
+
+  <main id="stage" aria-live="polite"></main>
+
+  <footer>Pattern recognition — one of the four computational thinking skills.</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var RED="#F0524B", WHITE="#FFFFFF", GREEN="#2FB457", BLUE="#3B6BE5",
+      INK="#2F3C7E", GREY="#CBD5E1", AMBER="#FFA62B", TEAL="#17A398";
+
+  /* ---------- shape renderers ---------- */
+
+  function svg(w,h,inner){
+    return '<svg viewBox="0 0 '+w+' '+h+'" width="'+w+'" height="'+h+'" role="img">'+inner+'</svg>';
+  }
+
+  // grid of squares: 1 = red, 0 = white
+  function squares(rows,cell){
+    cell = cell||30;
+    var cols=rows[0].length, s="";
+    for(var r=0;r<rows.length;r++){
+      for(var c=0;c<cols;c++){
+        s+='<rect x="'+(c*cell)+'" y="'+(r*cell)+'" width="'+cell+'" height="'+cell+
+           '" fill="'+(rows[r][c]?RED:WHITE)+'" stroke="'+INK+'" stroke-width="2.5"/>';
+      }
+    }
+    return svg(cols*cell, rows.length*cell, s);
+  }
+
+  // grid of diamonds: 1 = red, 0 = green
+  function diamonds(rows,cell){
+    cell = cell||34;
+    var cols=rows[0].length, s="";
+    for(var r=0;r<rows.length;r++){
+      for(var c=0;c<cols;c++){
+        var cx=c*cell+cell/2, cy=r*cell+cell/2, k=cell/2-1.5;
+        s+='<polygon points="'+cx+','+(cy-k)+' '+(cx+k)+','+cy+' '+cx+','+(cy+k)+' '+(cx-k)+','+cy+
+           '" fill="'+(rows[r][c]?RED:GREEN)+'" stroke="'+INK+'" stroke-width="2.5"/>';
+      }
+    }
+    return svg(cols*cell, rows.length*cell, s);
+  }
+
+  // ternary symbols: 0 = red circle, 1 = blue diamond, 2 = green triangle
+  function symbolAt(sym,cx,cy,k){
+    if(sym===0) return '<circle cx="'+cx+'" cy="'+cy+'" r="'+k+'" fill="'+RED+'" stroke="'+INK+'" stroke-width="2.5"/>';
+    if(sym===1) return '<polygon points="'+cx+','+(cy-k)+' '+(cx+k)+','+cy+' '+cx+','+(cy+k)+' '+(cx-k)+','+cy+
+                       '" fill="'+BLUE+'" stroke="'+INK+'" stroke-width="2.5"/>';
+    return '<polygon points="'+(cx-k)+','+(cy-k*0.86)+' '+(cx+k)+','+(cy-k*0.86)+' '+cx+','+(cy+k)+
+           '" fill="'+GREEN+'" stroke="'+INK+'" stroke-width="2.5"/>';
+  }
+  function symbols(rows,cell){
+    cell = cell||36;
+    var cols=rows[0].length, s="";
+    for(var r=0;r<rows.length;r++){
+      for(var c=0;c<cols;c++){
+        s+=symbolAt(rows[r][c], c*cell+cell/2, r*cell+cell/2, cell/2-3);
+      }
+    }
+    return svg(cols*cell, rows.length*cell, s);
+  }
+
+  // dashed placeholder strip, so a missing column lines up with the real ones
+  function blankStrip(n,cell){
+    cell = cell||30;
+    var s="";
+    for(var r=0;r<n;r++){
+      s+='<rect x="1.5" y="'+(r*cell+1.5)+'" width="'+(cell-3)+'" height="'+(cell-3)+
+         '" fill="none" stroke="'+INK+'" stroke-width="2.5" stroke-dasharray="5 4"/>';
+    }
+    return svg(cell, n*cell, s);
+  }
+
+  // base-4 colour chips: 0 grey, 1 blue, 2 teal, 3 amber
+  var CHIP=[GREY,BLUE,TEAL,AMBER];
+  function chips(rows,cell){
+    cell = cell||36;
+    var cols=rows[0].length, s="";
+    for(var r=0;r<rows.length;r++){
+      for(var c=0;c<cols;c++){
+        s+='<rect x="'+(c*cell+3)+'" y="'+(r*cell+3)+'" width="'+(cell-6)+'" height="'+(cell-6)+
+           '" rx="7" fill="'+CHIP[rows[r][c]]+'" stroke="'+INK+'" stroke-width="2.5"/>';
+      }
+    }
+    return svg(cols*cell, rows.length*cell, s);
+  }
+
+  /* ---------- layout helpers ---------- */
+
+  function numbered(rows, render, cell){
+    var out='<div class="rowstack">';
+    for(var i=0;i<rows.length;i++){
+      out+='<div class="rowline"><span class="rownum">'+i+'</span>'+render([rows[i]],cell)+'</div>';
+    }
+    return out+'</div>';
+  }
+
+  function columns(cols, render, labels){
+    var out='<div class="seq">';
+    for(var i=0;i<cols.length;i++){
+      var grid=[];
+      for(var r=0;r<cols[i].length;r++) grid.push([cols[i][r]]);
+      out+='<div class="item"><span class="tag">'+labels[i]+'</span>'+render(grid)+'</div>';
+    }
+    return out+'<div class="item"><span class="tag">'+labels[cols.length]+'</span><div class="mystery">?</div></div></div>';
+  }
+
+  /* ---------- puzzles ---------- */
+
+  var puzzles=[
+    {
+      title:"Counting with squares",
+      brief:"Each row is the next number along, written with four squares. Red squares mean something — work out what.",
+      stage:function(){
+        return numbered([[0,0,0,0],[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0]], squares)+
+               '<div class="rowline" style="margin-top:7px"><span class="rownum">5</span><div class="mystery">?</div></div>';
+      },
+      ask:"Which squares make row 5?",
+      options:[
+        squares([[0,1,0,1]]), squares([[0,1,1,0]]),
+        squares([[1,0,0,1]]), squares([[0,0,1,1]])
+      ],
+      answer:0,
+      why:"Row 5 is 0101. Reading the columns right to left they are worth 1, 2, 4 and 8. Red means that value counts, so 4 + 1 = 5. Notice the rhythm: the last column flips every single row, the next flips every two rows, the next every four."
+    },
+    {
+      title:"Counting with shapes",
+      brief:"Same idea, but now there are only three symbols to play with instead of two: a red circle, a blue diamond and a green triangle.",
+      stage:function(){
+        return numbered([[0,0],[0,1],[0,2],[1,0],[1,1]], symbols)+
+               '<div class="rowline" style="margin-top:7px"><span class="rownum">5</span><div class="mystery">?</div></div>';
+      },
+      ask:"Which shapes make row 5?",
+      options:[
+        symbols([[1,2]]), symbols([[2,0]]),
+        symbols([[1,0]]), symbols([[0,2]])
+      ],
+      answer:0,
+      why:"The right-hand shape cycles circle, diamond, triangle and then starts again. Every time it wraps back to a circle, the left-hand shape moves on one. Row 5 is diamond then triangle."
+    },
+    {
+      title:"Counting down the columns",
+      brief:"This time each column is a number, read from the top diamond downwards. Green means nothing counts, red means it does.",
+      stage:function(){
+        return columns(
+          [[0,0,0],[1,0,0],[0,1,0],[1,1,0],[0,0,1]],
+          diamonds,
+          ["0","1","2","3","4","5"]
+        );
+      },
+      ask:"Which column comes next?",
+      options:[
+        diamonds([[1],[0],[1]]), diamonds([[0],[1],[1]]),
+        diamonds([[1],[1],[1]]), diamonds([[0],[0],[1]])
+      ],
+      answer:0,
+      why:"The top diamond flips every column, the middle one every two columns, the bottom one every four. Column 5 needs the 4 and the 1, so the top and bottom go red."
+    },
+    {
+      title:"Finding the missing rhythm",
+      brief:"Here are the first eight numbers again, but one whole column has been rubbed out. Each column has its own steady beat.",
+      stage:function(){
+        var kept=[[0,0],[0,1],[1,0],[1,1],[0,0],[0,1],[1,0],[1,1]];
+        var out='<div class="seq" style="align-items:flex-start;gap:0">';
+        out+='<div class="item"><span class="tag">?</span>'+blankStrip(8,30)+'</div>';
+        out+='<div class="item"><span class="tag">2s and 1s</span>'+squares(kept,30)+'</div>';
+        return out+'</div>';
+      },
+      ask:"Which strip fills the gap?",
+      options:[
+        squares([[0],[0],[0],[0],[1],[1],[1],[1]],26),
+        squares([[0],[1],[0],[1],[0],[1],[0],[1]],26),
+        squares([[0],[0],[1],[1],[0],[0],[1],[1]],26),
+        squares([[1],[1],[1],[1],[0],[0],[0],[0]],26)
+      ],
+      answer:0,
+      why:"Every column keeps a steady beat, and each beat is twice as slow as the one to its right. One, one, two, two, so the missing column runs in fours: four whites then four reds."
+    },
+    {
+      title:"Counting with four colours",
+      brief:"Two squares gave you two symbols. Three shapes gave you three. Now there are four colours to count with.",
+      stage:function(){
+        return numbered([[0,0],[0,1],[0,2],[0,3],[1,0],[1,1]], chips)+
+               '<div class="rowline" style="margin-top:7px"><span class="rownum">6</span><div class="mystery">?</div></div>';
+      },
+      ask:"Which colours make row 6?",
+      options:[
+        chips([[1,2]]), chips([[2,0]]),
+        chips([[1,3]]), chips([[0,2]])
+      ],
+      answer:0,
+      why:"With four colours you go grey, blue, teal, amber and only then wrap around and carry. Row 6 is blue then teal. The rule never changed — only the number of symbols did."
+    }
+  ];
+
+  var BUILD={
+    title:"Build it yourself",
+    brief:"No options this time. Click the squares to turn them red and build row 7 for yourself.",
+    rows:[[0,0,0,0],[0,0,0,1],[0,0,1,0],[0,0,1,1],[0,1,0,0],[0,1,0,1],[0,1,1,0]],
+    answer:[0,1,1,1],
+    why:"Row 7 is 0111, because 4 + 2 + 1 = 7. It is the last row before the 8s column finally wakes up."
+  };
+
+  var TOTAL=puzzles.length+1;
+
+  /* ---------- state ---------- */
+  var at=0, marks=[];
+
+  var track=document.getElementById("track");
+  var stage=document.getElementById("stage");
+
+  function drawTrack(inIntro){
+    if(inIntro){ track.innerHTML=""; return; }
+    var h="";
+    for(var i=0;i<TOTAL;i++){
+      var cls="pip";
+      if(marks[i]===true) cls+=" got";
+      else if(marks[i]===false) cls+=" miss";
+      else if(i===at) cls+=" now";
+      h+='<span class="'+cls+'">'+(i+1)+'</span>';
+    }
+    track.innerHTML=h;
+  }
+
+  var LETTERS=["A","B","C","D"];
+
+  function shuffled(n){
+    var a=[],i,j,t;
+    for(i=0;i<n;i++) a.push(i);
+    for(i=a.length-1;i>0;i--){
+      j=Math.floor(Math.random()*(i+1));
+      t=a[i];a[i]=a[j];a[j]=t;
+    }
+    return a;
+  }
+
+  function showPuzzle(){
+    var p=puzzles[at];
+    var order=shuffled(p.options.length);
+
+    var h='<section class="panel">';
+    h+='<p class="step">Puzzle '+(at+1)+' of '+TOTAL+'</p>';
+    h+='<h2>'+p.title+'</h2>';
+    h+='<p class="brief">'+p.brief+'</p>';
+    h+='<div class="stage">'+p.stage()+'</div>';
+    h+='<p class="ask">'+p.ask+'</p>';
+    h+='<div class="opts" id="opts">';
+    for(var i=0;i<order.length;i++){
+      h+='<button class="opt" data-i="'+order[i]+'"><span class="letter">'+LETTERS[i]+'</span>'+p.options[order[i]]+'</button>';
+    }
+    h+='</div><div id="after"></div></section>';
+    stage.innerHTML=h;
+
+    var btns=stage.querySelectorAll(".opt");
+    for(var b=0;b<btns.length;b++){
+      btns[b].addEventListener("click",function(){
+        judge(parseInt(this.getAttribute("data-i"),10), this, btns, p);
+      });
+    }
+    drawTrack();
+  }
+
+  function judge(picked, node, btns, p){
+    var right = picked===p.answer;
+    marks[at]=right;
+
+    for(var i=0;i<btns.length;i++){
+      btns[i].disabled=true;
+      var idx=parseInt(btns[i].getAttribute("data-i"),10);
+      if(idx===p.answer) btns[i].classList.add("right");
+    }
+    if(!right) node.classList.add("wrong");
+
+    var after=document.getElementById("after");
+    after.innerHTML=
+      '<div class="verdict reveal '+(right?"good":"bad")+'">'+
+      '<h3>'+(right?"That is the one":"Not this time")+'</h3>'+
+      '<p>'+p.why+'</p></div>'+
+      '<div class="bar"><button class="btn" id="go">'+
+      (at===puzzles.length-1?"Try the last one":"Next puzzle")+'</button></div>';
+
+    document.getElementById("go").addEventListener("click",function(){
+      at++;
+      if(at<puzzles.length) showPuzzle(); else showBuild();
+    });
+    document.getElementById("go").focus();
+    drawTrack();
+  }
+
+  /* ---------- intro ---------- */
+
+  function showIntro(){
+    var h='<section class="panel">';
+    h+='<h2>What is pattern recognition?</h2>';
+
+    h+='<p class="lead">Spotting when something <b>repeats</b>, or noticing that a new problem has '
+     + 'the <b>same shape</b> as one you have already solved. It is one of the four computational '
+     + 'thinking skills, and the one that saves programmers the most work.</p>';
+
+    h+='<div class="duo">';
+
+    /* left: repetition becomes a loop */
+    h+='<div><h3>A repeat can become a loop</h3><div class="stackpair">';
+    h+='<div><p class="over">Without spotting the pattern</p><div class="slab">'
+     + 'print("Hello")\nprint("Hello")\nprint("Hello")'
+     + '</div></div>';
+    h+='<div><p class="over">After spotting the pattern</p><div class="slab">'
+     + '<span class="kw">for</span> x <span class="kw">in</span> range(3):\n    print("Hello")'
+     + '</div></div>';
+    h+='</div>';
+    h+='<p class="caption">Both print Hello three times. Noticing the repeat is the pattern '
+     + 'recognition. Writing a loop is what you do about it.</p></div>';
+
+    /* right: same rule, different symbols */
+    h+='<div><h3>The same rule in disguise</h3>';
+    h+='<div class="twin">';
+    h+='<div class="item"><span class="tag">five, two symbols</span>'+squares([[0,1,0,1]],30)+'</div>';
+    h+='<div class="item"><span class="tag">five, three symbols</span>'+symbols([[1,2]],36)+'</div>';
+    h+='</div>';
+    h+='<p class="caption">These look nothing alike, but both are the number five and both follow '
+     + 'the same counting rule. Spot a rule once and you can use it on problems that look quite '
+     + 'different.</p>';
+    h+='<p class="caption"><b>Your tactic:</b> find the part that changes fastest, then work out '
+     + 'how much slower the next part changes.</p></div>';
+
+    h+='</div>';
+
+    h+='<div class="begin"><button class="btn" id="start">Start puzzle 1</button>'
+     + '<span>Six puzzles. You build the last one yourself.</span></div>';
+    h+='</section>';
+
+    document.body.classList.add("intro");
+    stage.innerHTML=h;
+    document.getElementById("start").addEventListener("click",function(){
+      document.body.classList.remove("intro");
+      at=0; marks=[]; showPuzzle();
+    });
+    drawTrack(true);
+  }
+
+  /* ---------- build-your-own ---------- */
+
+  function showBuild(){
+    var made=[0,0,0,0];
+
+    var h='<section class="panel">';
+    h+='<p class="step">Puzzle '+TOTAL+' of '+TOTAL+'</p>';
+    h+='<h2>'+BUILD.title+'</h2>';
+    h+='<p class="brief">'+BUILD.brief+'</p>';
+    h+='<div class="stage"><div class="builder">';
+    h+=numbered(BUILD.rows, squares, 44);
+    h+='<div class="rowline" style="margin-top:4px"><span class="rownum">7</span><div class="cellrow" id="cells">';
+    for(var i=0;i<4;i++){
+      h+='<button class="cell" data-c="'+i+'" aria-label="Square '+(i+1)+'"></button>';
+    }
+    h+='</div></div><p class="hintline">Click a square to turn it red. Click again to turn it back.</p>';
+    h+='</div></div>';
+    h+='<div class="bar"><button class="btn" id="check">Check my row</button></div>';
+    h+='<div id="after"></div></section>';
+    stage.innerHTML=h;
+
+    var cells=stage.querySelectorAll(".cell");
+    for(var c=0;c<cells.length;c++){
+      cells[c].addEventListener("click",function(){
+        var k=parseInt(this.getAttribute("data-c"),10);
+        made[k]=made[k]?0:1;
+        this.classList.toggle("on");
+      });
+    }
+
+    document.getElementById("check").addEventListener("click",function(){
+      var right=true;
+      for(var i=0;i<4;i++) if(made[i]!==BUILD.answer[i]) right=false;
+      marks[TOTAL-1]=right;
+
+      for(var j=0;j<cells.length;j++) cells[j].disabled=true;
+      this.disabled=true;
+      this.style.opacity=".45";
+
+      document.getElementById("after").innerHTML=
+        '<div class="verdict reveal '+(right?"good":"bad")+'">'+
+        '<h3>'+(right?"Exactly right":"Close — here is the answer")+'</h3>'+
+        '<p>'+BUILD.why+'</p></div>'+
+        '<div class="bar"><button class="btn" id="fin">See how you did</button></div>';
+
+      document.getElementById("fin").addEventListener("click",showScore);
+      document.getElementById("fin").focus();
+      drawTrack();
+    });
+    drawTrack();
+  }
+
+  /* ---------- results ---------- */
+
+  var NAMES=["Counting with squares","Counting with shapes","Counting down the columns",
+             "Finding the missing rhythm","Counting with four colours","Build it yourself"];
+
+  function showScore(){
+    var got=0,i;
+    for(i=0;i<marks.length;i++) if(marks[i]) got++;
+
+    var note;
+    if(got===TOTAL) note="Every one. You spotted the rule each time the symbols changed.";
+    else if(got>=4) note="Strong work. Look back at the ones you missed and find the beat you were reading wrongly.";
+    else note="Worth another go. The trick is always the same: find the column that changes fastest, then check how much slower the next one is.";
+
+    var h='<section class="panel"><div class="tally">';
+    h+='<div class="num">'+got+'</div>';
+    h+='<div class="of">out of '+TOTAL+'</div>';
+    h+='<p class="note">'+note+'</p></div>';
+    h+='<ul class="recap">';
+    for(i=0;i<TOTAL;i++){
+      h+='<li><span class="mark '+(marks[i]?"y":"n")+'">'+(marks[i]?"\u2713":"\u2715")+'</span>'+NAMES[i]+'</li>';
+    }
+    h+='</ul>';
+    h+='<div class="bar"><button class="btn ghost" id="again">Start over</button></div></section>';
+    stage.innerHTML=h;
+
+    document.getElementById("again").addEventListener("click",function(){
+      at=0; marks=[]; showPuzzle();
+    });
+    drawTrack();
+  }
+
+  showIntro();
+})();
+</script>
+</body>
+</html>
