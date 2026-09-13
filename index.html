@@ -51,14 +51,8 @@
       font-size: 1.1rem;
     }
 
-    .controls {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 2rem;
-    }
-
     .search-input {
-      flex: 1;
+      width: 100%;
       padding: 0.75rem 1rem;
       border-radius: 8px;
       border: 1px solid var(--border);
@@ -66,6 +60,7 @@
       color: var(--text);
       font-size: 1rem;
       outline: none;
+      margin-bottom: 2rem;
       transition: border-color 0.2s;
     }
 
@@ -112,7 +107,7 @@
       display: flex;
       gap: 0.5rem;
       flex-wrap: wrap;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
     }
 
     .tag {
@@ -124,41 +119,22 @@
       font-weight: 600;
     }
 
-    .card-links {
-      display: flex;
-      gap: 0.75rem;
-    }
-
     .btn {
       text-decoration: none;
-      padding: 0.5rem 1rem;
+      padding: 0.6rem 1rem;
       border-radius: 6px;
       font-size: 0.9rem;
       font-weight: 500;
-      transition: background 0.2s;
       text-align: center;
-      flex: 1;
-    }
-
-    .btn-primary {
       background: var(--accent);
       color: #000;
+      display: block;
+      transition: background 0.2s, color 0.2s;
     }
 
-    .btn-primary:hover {
+    .btn:hover {
       background: var(--accent-hover);
       color: #fff;
-    }
-
-    .btn-secondary {
-      background: transparent;
-      color: var(--text-muted);
-      border: 1px solid var(--border);
-    }
-
-    .btn-secondary:hover {
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
     }
 
     footer {
@@ -179,72 +155,61 @@
   <div class="container">
     <header>
       <h1>NLCS Computer Science Tasks</h1>
-      <p>Directory of project subpages, tasks, and resources</p>
+      <p>Interactive tasks and educational resources directory</p>
     </header>
 
-    <div class="controls">
-      <input type="text" id="searchInput" class="search-input" placeholder="Search tasks or topic tags...">
-    </div>
+    <input type="text" id="searchInput" class="search-input" placeholder="Search tasks or keywords...">
 
     <div class="grid" id="taskGrid">
 
-      <!-- Card 1 -->
-      <div class="card" data-tags="python basics algorithms">
+      <!-- Card 1: Spot the Pattern -->
+      <div class="card" data-tags="pattern recognition logic task">
         <div>
-          <h2 class="card-title">Task 1: Basics</h2>
-          <p class="card-description">Introduction to fundamental programming concepts and syntax.</p>
+          <h2 class="card-title">Spot the Pattern</h2>
+          <p class="card-description">Interactive exercise focused on identifying patterns and computational logic.</p>
           <div class="tags">
-            <span class="tag">Python</span>
-            <span class="tag">Basics</span>
+            <span class="tag">Patterns</span>
+            <span class="tag">Logic</span>
           </div>
         </div>
-        <div class="card-links">
-          <a href="https://nscarlettNLCS.github.io/NLCSCSTasks/task1" class="btn btn-primary" target="_blank">View Task</a>
-          <a href="https://github.com/nscarlettNLCS/NLCSCSTasks/tree/main/task1" class="btn btn-secondary" target="_blank">Source Code</a>
-        </div>
+        <a href="./Spot_the_Pattern.html" class="btn">Open Task</a>
       </div>
 
-      <!-- Card 2 -->
-      <div class="card" data-tags="data structures array list">
+      <!-- Card 2: Yr5 ESafety Matching -->
+      <div class="card" data-tags="esafety year 5 matching primary safety">
         <div>
-          <h2 class="card-title">Task 2: Data Structures</h2>
-          <p class="card-description">Working with arrays, lists, dictionaries, and dynamic storage.</p>
+          <h2 class="card-title">Yr5 ESafety Matching</h2>
+          <p class="card-description">Year 5 activity for learning online safety concepts through matching games.</p>
           <div class="tags">
-            <span class="tag">Data Structures</span>
-            <span class="tag">Arrays</span>
+            <span class="tag">Year 5</span>
+            <span class="tag">E-Safety</span>
           </div>
         </div>
-        <div class="card-links">
-          <a href="https://nscarlettNLCS.github.io/NLCSCSTasks/task2" class="btn btn-primary" target="_blank">View Task</a>
-          <a href="https://github.com/nscarlettNLCS/NLCSCSTasks/tree/main/task2" class="btn btn-secondary" target="_blank">Source Code</a>
-        </div>
+        <a href="./Yr5_ESafety_Matching.html" class="btn">Open Task</a>
       </div>
 
-      <!-- Card 3 -->
-      <div class="card" data-tags="web html css javascript">
+      <!-- Card 3: Control Systems Questions -->
+      <div class="card" data-tags="control systems sensors questions hardware">
         <div>
-          <h2 class="card-title">Task 3: Web Fundamentals</h2>
-          <p class="card-description">Building responsive user interfaces using HTML, CSS, and JS.</p>
+          <h2 class="card-title">Control Systems Questions</h2>
+          <p class="card-description">Question set and activities related to control systems, inputs, and outputs.</p>
           <div class="tags">
-            <span class="tag">HTML/CSS</span>
-            <span class="tag">JavaScript</span>
+            <span class="tag">Control Systems</span>
+            <span class="tag">Quiz</span>
           </div>
         </div>
-        <div class="card-links">
-          <a href="https://nscarlettNLCS.github.io/NLCSCSTasks/task3" class="btn btn-primary" target="_blank">View Task</a>
-          <a href="https://github.com/nscarlettNLCS/NLCSCSTasks/tree/main/task3" class="btn btn-secondary" target="_blank">Source Code</a>
-        </div>
+        <a href="./control_systems_questions.html" class="btn">Open Task</a>
       </div>
 
     </div>
 
     <footer>
-      <p>Hosted on GitHub Pages • View <a href="https://github.com/nscarlettNLCS/NLCSCSTasks" target="_blank">Repository</a></p>
+      <p>Hosted on GitHub Pages • <a href="https://github.com/nscarlettNLCS/NLCSCSTasks" target="_blank">View Repository</a></p>
     </footer>
   </div>
 
   <script>
-    // Live Search Filter
+    // Search Filter
     const searchInput = document.getElementById('searchInput');
     const cards = document.querySelectorAll('.card');
 
