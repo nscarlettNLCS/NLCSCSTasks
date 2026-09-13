@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Online safety match-up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #EEF3F8;
+    --ink: #1D2B53;
+    --muted: #56627F;
+    --advice: #1F7A5C;
+    --advice-tint: #E3F4EC;
+    --risk: #B4233C;
+    --risk-tint: #FBE6EA;
+    --focus: #3B6FE0;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Lexend", "Segoe UI", system-ui, sans-serif;
+    font-size: 17px;
+    line-height: 1.45;
+    color: var(--ink);
+    background-color: var(--paper);
+    background-image:
+      linear-gradient(rgba(29, 43, 83, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(29, 43, 83, .05) 1px, transparent 1px);
+    background-size: 28px 28px;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 28px 20px 56px; }
+
+  header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 12px 24px; margin-bottom: 20px; }
+  h1 { font-size: clamp(1.7rem, 3.4vw, 2.5rem); line-height: 1.1; font-weight: 700; letter-spacing: -.01em; margin: 0 0 8px; }
+  .lede { margin: 0; color: var(--muted); max-width: 58ch; }
+  .tally { text-align: right; font-size: .95rem; }
+  .tally strong { font-size: 1.15rem; }
+  .tally .wrong { color: var(--muted); }
+
+  .topics { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 26px; }
+  .topic {
+    font: inherit; font-size: .92rem; color: var(--ink);
+    background: #fff; border: 2px solid var(--ink); border-radius: 999px;
+    padding: 7px 14px; cursor: pointer;
+  }
+  .topic[aria-current="true"] { background: var(--ink); color: #fff; }
+  .topic:focus-visible, .card:focus-visible, .btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+  .board { position: relative; display: grid; grid-template-columns: 1fr 110px 1fr; align-items: start; }
+  .col { position: relative; z-index: 1; }
+  .col-advice { grid-column: 1; }
+  .col-risk { grid-column: 3; }
+  .col h2 { display: flex; align-items: center; gap: 8px; font-size: 1.02rem; font-weight: 700; margin: 0 0 12px; }
+  .col-advice h2 { color: var(--advice); }
+  .col-risk h2 { color: var(--risk); }
+  .col h2 svg { flex: none; }
+  .cards { display: flex; flex-direction: column; gap: 14px; }
+
+  .card {
+    position: relative; width: 100%; text-align: left;
+    font: inherit; color: var(--ink);
+    background: #fff; border: 2px solid var(--ink); border-radius: 12px;
+    padding: 14px 16px; box-shadow: 4px 4px 0 var(--ink);
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .25s ease;
+  }
+  .card:hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 var(--ink); }
+  .col-advice .card[aria-pressed="true"] { background: var(--advice-tint); border-color: var(--advice); box-shadow: 4px 4px 0 var(--advice); }
+  .col-risk .card[aria-pressed="true"] { background: var(--risk-tint); border-color: var(--risk); box-shadow: 4px 4px 0 var(--risk); }
+  .card.matched { box-shadow: none; transform: none; padding-right: 46px; }
+  .card.showing { outline: 3px solid var(--ink); outline-offset: 3px; }
+  .card .mark {
+    position: absolute; top: 10px; right: 10px;
+    width: 26px; height: 26px; border-radius: 50%;
+    display: none; place-items: center;
+    background: var(--ink); color: #fff; font-size: .8rem; line-height: 1;
+  }
+  .card.matched .mark { display: grid; }
+  .card.shake { animation: shake .42s ease; }
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-7px); }
+    40% { transform: translateX(7px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(4px); }
+  }
+
+  svg.links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 0; }
+  svg.links path { fill: none; stroke-linecap: round; }
+  svg.links .draw path { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw .55s ease-out forwards; }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  .feedback {
+    margin-top: 28px; min-height: 96px;
+    background: #fff; border: 2px solid var(--ink); border-left-width: 12px; border-radius: 12px;
+    padding: 16px 20px;
+  }
+  .feedback p { margin: 0; max-width: 70ch; }
+  .feedback .fb-title { font-weight: 700; font-size: 1.08rem; margin-bottom: 4px; }
+  .feedback .fb-extra { margin-top: 10px; }
+  .feedback .btn { margin-top: 14px; }
+
+  .controls { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+  .btn {
+    font: inherit; font-size: .95rem; cursor: pointer;
+    border: 2px solid var(--ink); border-radius: 10px; padding: 8px 16px;
+    background: #fff; color: var(--ink);
+  }
+  .btn-primary { background: var(--ink); color: #fff; }
+  .btn:disabled { opacity: .45; cursor: not-allowed; }
+
+  @media (max-width: 720px) {
+    body { font-size: 16px; }
+    .tally { text-align: left; }
+    .board { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .col-risk { grid-column: 2; }
+    svg.links { display: none; }
+    .col h2 { font-size: .9rem; align-items: flex-start; }
+    .cards { gap: 10px; }
+    .card { font-size: .88rem; padding: 10px 11px; box-shadow: 3px 3px 0 var(--ink); }
+    .card.matched { padding-right: 11px; padding-top: 40px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    svg.links .draw path { stroke-dashoffset: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Online safety match-up</h1>
+      <p class="lede">Tap a piece of advice, then tap what could happen if you ignore it. You can start from either side.</p>
+    </div>
+    <div class="tally" aria-live="polite">
+      <div><strong id="matchedCount">0</strong> of <span id="totalCount">0</span> matched</div>
+      <div class="wrong" id="wrongCount">0 wrong tries</div>
+    </div>
+  </header>
+
+  <nav class="topics" id="topics" aria-label="Topics"></nav>
+
+  <div class="board" id="board">
+    <svg class="links" id="links" aria-hidden="true"></svg>
+    <section class="col col-advice">
+      <h2>
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3Z" fill="currentColor"/><path d="m8.5 12 2.5 2.5 4.5-5" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Advice
+      </h2>
+      <div class="cards" id="adviceList"></div>
+    </section>
+    <section class="col col-risk">
+      <h2>
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 2 21h20L12 3Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M12 10v5" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="18" r="1.2" fill="#fff"/></svg>
+        What could happen if you ignore it
+      </h2>
+      <div class="cards" id="riskList"></div>
+    </section>
+  </div>
+
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+
+  <div class="controls">
+    <button class="btn" id="revealBtn" type="button">Show answers</button>
+    <button class="btn" id="resetBtn" type="button">Start this topic again</button>
+  </div>
+</div>
+
+<script>
+const TOPICS = [
+  {
+    name: "Privacy and oversharing",
+    pairs: [
+      { a: "Check your privacy settings. Can only your friends see your posts, or can anyone?",
+        c: "Anyone, even strangers, can see your private information.",
+        why: "A public account lets anyone in the world see your posts, not just your friends." },
+      { a: "Think before you share. Could someone work out where you live from your post?",
+        c: "Strangers could find out where you live and try to contact you. Stranger danger!",
+        why: "A photo showing your street, house number or school uniform can tell a stranger where to find you." },
+      { a: "Search for yourself online to see what other people can find out about you.",
+        c: "Embarrassing information about you could stay online and damage your reputation.",
+        why: "Searching your own name helps you spot embarrassing things early, so a trusted adult can help get them removed." },
+      { a: "Delete any online accounts you no longer use.",
+        c: "You could get lots of spam emails.",
+        why: "Old accounts still have your email address. If that website gets hacked, your email can end up on spam lists." }
+    ]
+  },
+  {
+    name: "Passwords and scams",
+    pairs: [
+      { a: "Use a strong, different password for every account: 12–15 characters mixing capital letters, small letters, numbers and symbols.",
+        c: "You could get hacked.",
+        why: "Short or reused passwords are easy to guess. If one account is hacked, every account with the same password is at risk." },
+      { a: "Watch out for website names that copy real ones with small spelling changes, like facebuk.com instead of facebook.com.",
+        c: "You could fall for scams, like fake “free Robux” offers.",
+        why: "Scam websites copy famous names so you trust them, then trick you into giving away your login or money." },
+      { a: "If you get a suspicious message, show it to a parent before clicking anything.",
+        c: "You could get a virus on your computer.",
+        why: "Links and attachments in suspicious messages can install harmful software on your device." },
+      { a: "If a pop-up asks for personal information, close the app or browser and tell a parent or teacher.",
+        c: "Someone could use your parents’ credit card or bank account without permission.",
+        why: "Fake pop-ups pretend to be real companies to trick people into typing in payment details." }
+    ]
+  },
+  {
+    name: "Strangers and sharing",
+    pairs: [
+      { a: "Never agree to meet someone you have only met online. If they ask, tell a trusted adult straight away.",
+        c: "You could meet a dangerous stranger who lied about who they are.",
+        why: "People online can pretend to be anyone, even a child your age." },
+      { a: "Only accept friend requests from people you know and trust in real life.",
+        c: "Strangers could see your photos and send you private messages.",
+        why: "Accepting a friend request gives that person access to your posts, photos and messages." },
+      { a: "Never share personal information, like your address, school or phone number, with anyone online you don’t know in real life.",
+        c: "Someone could steal your identity and pretend to be you.",
+        why: "With enough personal details, a criminal can make fake accounts in your name." },
+      { a: "If you’re unsure about sharing something, ask a parent or teacher first.",
+        c: "Once it’s posted, you can’t take it back. Anyone could screenshot it and share it.",
+        why: "Even if you delete a post, someone may already have saved or shared it." }
+    ]
+  },
+  {
+    name: "Cyberbullying and trolls",
+    pairs: [
+      { a: "Take a deep breath and step away. If someone writes something negative about you, don’t reply.",
+        c: "Arguing back makes you more stressed, and the argument keeps going.",
+        why: "Trolls want a reaction. Replying gives them one and usually makes you feel worse." },
+      { a: "Block and report the person who made the comment.",
+        c: "They could keep bullying and harassing you online.",
+        why: "Blocking stops them contacting you, and reporting lets the app take action against their account." },
+      { a: "Don’t take it personally. The person might be having a bad day or just wants attention.",
+        c: "You could start to feel sad, anxious or depressed.",
+        why: "Mean comments say more about the person writing them than about you. Remembering that protects your mental health." },
+      { a: "Be kind when you post or comment online.",
+        c: "Your own reputation could be damaged, because people remember mean comments.",
+        why: "Everything you post shapes how other people see you, now and in the future." }
+    ]
+  },
+  {
+    name: "Fake news and risky content",
+    pairs: [
+      { a: "Verify the facts. If someone tells you something online, double-check it on trusted websites.",
+        c: "You could believe and share information that isn’t true.",
+        why: "False information spreads fast. Checking a few reliable sources stops you passing it on." },
+      { a: "Check the profile of the person who posted it. Who are they, and can you trust them?",
+        c: "You could start to have extreme opinions and think everyone else is wrong.",
+        why: "Some accounts only post one-sided or extreme views. Knowing who is behind a post helps you spot this." },
+      { a: "Never copy an online challenge without asking a parent or teacher first.",
+        c: "You could get hurt doing a harmful challenge, like a risky stunt.",
+        why: "Challenge videos often hide how dangerous the stunt really is, and people have been seriously injured." }
+    ]
+  }
+];
+
+const COLORS = [
+  { hex: "#FFE066", sym: "●" },
+  { hex: "#FFA8D2", sym: "■" },
+  { hex: "#9BE8B5", sym: "▲" },
+  { hex: "#A8D8FF", sym: "◆" }
+];
+
+const $ = id => document.getElementById(id);
+const els = {
+  topics: $("topics"), board: $("board"), svg: $("links"),
+  adviceList: $("adviceList"), riskList: $("riskList"), feedback: $("feedback"),
+  revealBtn: $("revealBtn"), resetBtn: $("resetBtn"),
+  matchedCount: $("matchedCount"), totalCount: $("totalCount"), wrongCount: $("wrongCount")
+};
+
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+// Shuffle so no consequence sits level with its own advice card
+function mixedOrder(n) {
+  if (n < 2) return [0];
+  let order;
+  do { order = shuffle([...Array(n).keys()]); } while (order.some((v, i) => v === i));
+  return order;
+}
+function freshState(t) {
+  return { slot: {}, mistakes: 0, revealed: false, order: mixedOrder(t.pairs.length) };
+}
+
+let state = TOPICS.map(freshState);
+let cur = 0;
+let selected = null;
+let adviceBtns = [], riskBtns = [];
+let showingIdx = null;
+
+const plural = (n, word) => `${n} ${word}${n === 1 ? "" : "s"}`;
+const matchedIn = s => Object.keys(s.slot).length;
+const isDone = i => matchedIn(state[i]) === TOPICS[i].pairs.length;
+
+function makeCard(text, side, i) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "card";
+  b.setAttribute("aria-pressed", "false");
+  b.innerHTML = `<span class="text"></span><span class="mark" aria-hidden="true"></span>`;
+  b.querySelector(".text").textContent = text;
+  b.addEventListener("click", () => pick(side, i));
+  b.addEventListener("animationend", () => b.classList.remove("shake"));
+  return b;
+}
+
+function buildTabs() {
+  els.topics.innerHTML = "";
+  TOPICS.forEach((t, i) => {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "topic";
+    b.addEventListener("click", () => goTo(i));
+    els.topics.appendChild(b);
+  });
+}
+
+function buildTopic() {
+  const t = TOPICS[cur], s = state[cur];
+  selected = null;
+  showingIdx = null;
+  els.adviceList.innerHTML = "";
+  els.riskList.innerHTML = "";
+  adviceBtns = t.pairs.map((p, i) => makeCard(p.a, "advice", i));
+  adviceBtns.forEach(b => els.adviceList.appendChild(b));
+  riskBtns = [];
+  s.order.forEach(i => {
+    const b = makeCard(t.pairs[i].c, "risk", i);
+    riskBtns[i] = b;
+    els.riskList.appendChild(b);
+  });
+  if (isDone(cur)) {
+    setDoneFeedback(null);
+  } else if (matchedIn(s) > 0) {
+    setFeedback({ title: "Keep going", body: `${matchedIn(s)} of ${t.pairs.length} matched so far. Pick a card to carry on.` });
+  } else {
+    setFeedback({ title: "Pick a card to start", body: "Choose any card from either column." });
+  }
+  update(null);
+}
+
+function goTo(i) {
+  cur = i;
+  buildTopic();
+}
+
+function pick(side, i) {
+  const t = TOPICS[cur], s = state[cur];
+
+  // Tapping a matched card shows its explanation again
+  if (s.slot[i] !== undefined) {
+    selected = null;
+    showingIdx = i;
+    const col = COLORS[s.slot[i]];
+    setFeedback({ title: "Why these match", body: t.pairs[i].why, color: col.hex });
+    update(null);
+    return;
+  }
+  showingIdx = null;
+
+  if (!selected || selected.side === side) {
+    const same = selected && selected.side === side && selected.i === i;
+    selected = same ? null : { side, i };
+    if (selected) {
+      setFeedback({ title: "Now pick its match", body: side === "advice"
+        ? "Which consequence could happen if someone ignored this advice?"
+        : "Which piece of advice would stop this from happening?" });
+    } else {
+      setFeedback({ title: "Pick a card", body: "Choose any card from either column." });
+    }
+    update(null);
+    return;
+  }
+
+  const adviceI = side === "advice" ? i : selected.i;
+  const riskI = side === "risk" ? i : selected.i;
+  selected = null;
+
+  if (adviceI === riskI) {
+    s.slot[adviceI] = matchedIn(s);
+    const col = COLORS[s.slot[adviceI]];
+    if (isDone(cur)) {
+      setDoneFeedback(t.pairs[adviceI].why, col.hex);
+    } else {
+      setFeedback({ title: "That’s a match!", body: t.pairs[adviceI].why, color: col.hex });
+    }
+    update(adviceI);
+  } else {
+    s.mistakes++;
+    adviceBtns[adviceI].classList.add("shake");
+    riskBtns[riskI].classList.add("shake");
+    setFeedback({ title: "Not quite", body: "Those two don’t go together. Ask yourself: what does this advice protect you from?", color: "#B4233C" });
+    update(null);
+  }
+}
+
+function nextUnfinished() {
+  for (let k = 1; k <= TOPICS.length; k++) {
+    const i = (cur + k) % TOPICS.length;
+    if (!isDone(i)) return i;
+  }
+  return -1;
+}
+
+function setDoneFeedback(why, color) {
+  const t = TOPICS[cur], s = state[cur];
+  const next = nextUnfinished();
+  let extra;
+  if (s.revealed) {
+    extra = "Answers shown for this topic. Tap any card to read why the pair matches.";
+  } else {
+    extra = `Topic complete: all ${t.pairs.length} matched with ${plural(s.mistakes, "wrong try")}.`;
+  }
+  let action;
+  if (next >= 0) {
+    action = { label: `Next topic: ${TOPICS[next].name}`, onClick: () => goTo(next) };
+  } else {
+    const totalWrong = state.reduce((n, st) => n + st.mistakes, 0);
+    extra += ` That’s every topic finished, with ${plural(totalWrong, "wrong try")} altogether.`;
+    action = { label: "Play again", onClick: resetAll };
+  }
+  setFeedback({
+    title: why ? "That’s a match!" : (s.revealed ? "Answers" : "Topic complete"),
+    body: why || null,
+    extra,
+    color: color || "#1D2B53",
+    action
+  });
+}
+
+function setFeedback({ title, body, extra, color, action }) {
+  const fb = els.feedback;
+  fb.innerHTML = "";
+  fb.style.borderLeftColor = color || "#1D2B53";
+  const h = document.createElement("p");
+  h.className = "fb-title";
+  h.textContent = title;
+  fb.appendChild(h);
+  if (body) {
+    const p = document.createElement("p");
+    p.textContent = body;
+    fb.appendChild(p);
+  }
+  if (extra) {
+    const p = document.createElement("p");
+    p.className = "fb-extra";
+    p.textContent = extra;
+    fb.appendChild(p);
+  }
+  if (action) {
+    const b = document.createElement("button");
+    b.type = "button";
+    b.className = "btn btn-primary";
+    b.textContent = action.label;
+    b.addEventListener("click", action.onClick);
+    fb.appendChild(b);
+  }
+}
+
+function update(animateIdx) {
+  const t = TOPICS[cur], s = state[cur];
+
+  t.pairs.forEach((p, i) => {
+    const slot = s.slot[i];
+    const matched = slot !== undefined;
+    [["advice", adviceBtns[i], p.a], ["risk", riskBtns[i], p.c]].forEach(([side, b, text]) => {
+      b.classList.toggle("matched", matched);
+      b.classList.toggle("showing", matched && showingIdx === i);
+      b.style.backgroundColor = matched ? COLORS[slot].hex : "";
+      b.querySelector(".mark").textContent = matched ? COLORS[slot].sym : "";
+      const isSel = !!selected && selected.side === side && selected.i === i;
+      b.setAttribute("aria-pressed", String(isSel));
+      b.setAttribute("aria-label", matched ? `Matched: ${text}. Show why.` : text);
+    });
+  });
+
+  [...els.topics.children].forEach((b, i) => {
+    b.textContent = TOPICS[i].name + (isDone(i) ? " ✓" : "");
+    b.setAttribute("aria-current", String(i === cur));
+  });
+
+  const total = TOPICS.reduce((n, tp) => n + tp.pairs.length, 0);
+  const matched = state.reduce((n, st) => n + matchedIn(st), 0);
+  const wrong = state.reduce((n, st) => n + st.mistakes, 0);
+  els.totalCount.textContent = total;
+  els.matchedCount.textContent = matched;
+  els.wrongCount.textContent = plural(wrong, "wrong try");
+
+  els.revealBtn.disabled = isDone(cur);
+
+  drawLinks(animateIdx);
+}
+
+function drawLinks(animateIdx) {
+  const svg = els.svg, s = state[cur];
+  if (getComputedStyle(svg).display === "none") { svg.innerHTML = ""; return; }
+  const b = els.board.getBoundingClientRect();
+  let out = "";
+  Object.entries(s.slot).forEach(([key, slot]) => {
+    const i = Number(key);
+    const ar = adviceBtns[i].getBoundingClientRect();
+    const cr = riskBtns[i].getBoundingClientRect();
+    const x1 = ar.right - b.left - 8, y1 = ar.top + ar.height / 2 - b.top;
+    const x2 = cr.left - b.left + 8, y2 = cr.top + cr.height / 2 - b.top;
+    const mx = (x1 + x2) / 2;
+    const d = `M${x1.toFixed(1)},${y1.toFixed(1)} C${mx.toFixed(1)},${y1.toFixed(1)} ${mx.toFixed(1)},${y2.toFixed(1)} ${x2.toFixed(1)},${y2.toFixed(1)}`;
+    const cls = i === animateIdx ? ' class="draw"' : "";
+    out += `<g${cls}><path d="${d}" pathLength="1" stroke="#1D2B53" stroke-width="14"/><path d="${d}" pathLength="1" stroke="${COLORS[slot].hex}" stroke-width="8"/></g>`;
+  });
+  svg.innerHTML = out;
+}
+
+function revealTopic() {
+  const t = TOPICS[cur], s = state[cur];
+  t.pairs.forEach((p, i) => {
+    if (s.slot[i] === undefined) s.slot[i] = matchedIn(s);
+  });
+  s.revealed = true;
+  selected = null;
+  showingIdx = null;
+  setDoneFeedback(null);
+  update(null);
+}
+
+function resetTopic() {
+  state[cur] = freshState(TOPICS[cur]);
+  buildTopic();
+}
+
+function resetAll() {
+  state = TOPICS.map(freshState);
+  cur = 0;
+  buildTopic();
+}
+
+els.revealBtn.addEventListener("click", revealTopic);
+els.resetBtn.addEventListener("click", resetTopic);
+
+new ResizeObserver(() => drawLinks(null)).observe(els.board);
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => drawLinks(null));
+
+buildTabs();
+buildTopic();
+</script>
+</body>
+</html>
