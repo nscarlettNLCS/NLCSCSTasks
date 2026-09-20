@@ -1,0 +1,1119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Python Functions Lesson</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=JetBrains+Mono:wght@400;600&display=swap">
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/skulpt@1.2.0/dist/skulpt-stdlib.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="firebase-config.js"></script>
+<style>
+:root{
+  --ground:#EEF2F1; --surface:#FFFFFF; --surface-2:#F6F8F8; --ink:#14232A; --muted:#56676C; --line:#CFD9D7;
+  --accent:#1D6A73; --accent-ink:#FFFFFF; --accent-soft:#D6ECEC;
+  --mark:#F4C542; --mark-soft:#FFF3C7;
+  --good:#237A4B; --good-soft:#DDF1E4; --warn:#9A6A00; --warn-soft:#FBEFCF; --bad:#B2362F; --bad-soft:#F8DEDC;
+  --sup:#B2362F; --core:#9A6A00; --str:#237A4B;
+  --code-bg:#12212A; --code-ink:#E4EEEC; --code-muted:#7E949A; --code-line:#1C2F3A; --code-hl:#294A3A;
+  --k:#7FD1D8; --s:#F4C542; --n:#F29E8E; --c:#7E949A; --f:#B9E38D;
+  --fs:17px;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ground:#0D171C; --surface:#15232A; --surface-2:#1A2B33; --ink:#E4EEEC; --muted:#9CB0B3; --line:#2B3E46;
+    --accent:#5FC3CB; --accent-ink:#0D171C; --accent-soft:#19393D;
+    --mark-soft:#3A3217; --good:#6FD39A; --good-soft:#173627; --warn:#F0C45A; --warn-soft:#3A3014; --bad:#F2877F; --bad-soft:#3E1D1B;
+    --sup:#F2877F; --core:#F0C45A; --str:#6FD39A;
+    --code-bg:#0A141A; --code-line:#132530;
+  }
+}
+:root[data-theme="dark"]{
+    --ground:#0D171C; --surface:#15232A; --surface-2:#1A2B33; --ink:#E4EEEC; --muted:#9CB0B3; --line:#2B3E46;
+    --accent:#5FC3CB; --accent-ink:#0D171C; --accent-soft:#19393D;
+    --mark-soft:#3A3217; --good:#6FD39A; --good-soft:#173627; --warn:#F0C45A; --warn-soft:#3A3014; --bad:#F2877F; --bad-soft:#3E1D1B;
+    --sup:#F2877F; --core:#F0C45A; --str:#6FD39A;
+    --code-bg:#0A141A; --code-line:#132530;
+}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.5;padding-inline:16px;padding-block:0 32px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--mark);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:2rem;font-weight:800;letter-spacing:-.01em}
+h3{font-size:1.15rem;font-weight:600}
+p{margin:0}
+code,.mono{font-family:var(--mono);font-size:.92em}
+.wrap{max-width:1280px;margin:0 auto}
+
+/* top bar */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--ground);padding-block:12px 10px;border-bottom:1px solid var(--line)}
+.top-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between}
+.brand{display:flex;align-items:baseline;gap:10px}
+.brand h1{font-size:1.35rem;font-weight:800}
+.brand span{color:var(--muted);font-size:.85rem}
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.step{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 12px 5px 6px;display:flex;align-items:center;gap:7px;font-size:.82rem;color:var(--muted)}
+.step b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--surface-2);color:var(--ink);font-size:.72rem;font-family:var(--mono)}
+.step[aria-current="step"]{background:var(--ink);color:var(--ground);border-color:var(--ink)}
+.step[aria-current="step"] b{background:var(--mark);color:#14232A}
+.step.primm{border-style:dashed}
+
+/* tools */
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--surface)}
+.seg button{border:0;background:transparent;padding:6px 12px;font-size:.85rem;font-weight:700}
+.seg button[aria-pressed="true"][data-lv="support"]{background:var(--sup);color:var(--surface)}
+.seg button[aria-pressed="true"][data-lv="core"]{background:var(--core);color:var(--surface)}
+.seg button[aria-pressed="true"][data-lv="stretch"]{background:var(--str);color:var(--surface)}
+.tbtn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:6px 11px;font-size:.85rem}
+.tbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.timer{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:3px 4px 3px 10px}
+.timer output{font-family:var(--mono);font-weight:600;min-width:3.4em;font-variant-numeric:tabular-nums}
+.timer output.done{color:var(--bad)}
+.timer button{border:0;background:var(--surface-2);border-radius:7px;padding:3px 8px;font-size:.8rem}
+
+/* stage */
+main{padding-top:22px}
+.stage{display:grid;gap:18px}
+.stage-head{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-end}
+.eyebrow{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);font-weight:700;margin-bottom:4px}
+.lead{font-size:1.15rem;max-width:62ch;color:var(--ink)}
+.cols{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.cols{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:12px;align-content:start}
+.panel.flat{background:transparent;border:0;padding:0}
+.muted{color:var(--muted)}
+.small{font-size:.85rem}
+
+/* level visibility */
+[data-show]{display:none}
+body[data-level="support"] [data-show~="support"],
+body[data-level="core"] [data-show~="core"],
+body[data-level="stretch"] [data-show~="stretch"]{display:block}
+body[data-level="support"] li[data-show~="support"],body[data-level="core"] li[data-show~="core"],body[data-level="stretch"] li[data-show~="stretch"]{display:list-item}
+.tier{display:inline-block;font-size:.7rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:999px;margin-right:6px;vertical-align:2px}
+.tier.support{background:var(--bad-soft);color:var(--sup)}
+.tier.core{background:var(--warn-soft);color:var(--core)}
+.tier.stretch{background:var(--good-soft);color:var(--str)}
+
+/* code */
+.code{background:var(--code-bg);color:var(--code-ink);border-radius:12px;font-family:var(--mono);font-size:1.05rem;line-height:1.7;overflow-x:auto;padding:12px 0}
+.code .ln{display:grid;grid-template-columns:3em 1fr;padding-right:16px;transition:background .15s}
+.code .ln i{font-style:normal;color:var(--code-muted);text-align:right;padding-right:14px;user-select:none}
+.code .ln span{white-space:pre}
+.code .ln.hl{background:var(--code-hl);box-shadow:inset 4px 0 0 var(--mark)}
+.tk-k{color:var(--k);font-weight:600}.tk-s{color:var(--s)}.tk-n{color:var(--n)}.tk-c{color:var(--c);font-style:italic}.tk-f{color:var(--f)}
+.out{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);border-radius:10px;padding:12px 14px;min-height:3.2em;white-space:pre-wrap;font-size:.98rem;margin:0}
+.out .err{color:#FFB4A9}
+.out .hint{color:var(--mark);display:block;margin-top:6px;font-family:var(--body)}
+.out-label{font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+/* editor */
+.editor{display:grid;grid-template-columns:3em 1fr;background:var(--code-bg);border-radius:12px;overflow:hidden}
+.editor .gutter{font-family:var(--mono);color:var(--code-muted);text-align:right;padding:12px 12px 12px 0;line-height:1.7;font-size:1rem;white-space:pre;overflow:hidden;user-select:none}
+.editor textarea{background:transparent;color:var(--code-ink);border:0;resize:vertical;font-family:var(--mono);font-size:1rem;line-height:1.7;padding:12px 14px 12px 4px;min-height:14em;white-space:pre;overflow:auto;tab-size:4;outline:none;caret-color:var(--mark)}
+.editor:focus-within{outline:3px solid var(--mark);outline-offset:2px}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:8px 14px;font-weight:700;font-size:.92rem}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.mark{background:var(--mark);color:#14232A;border-color:var(--mark)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* vote cards */
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+#exConf .options{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}
+@media (max-width:560px){.options{grid-template-columns:1fr}}
+.opt{border:2px solid var(--line);border-radius:12px;background:var(--surface);padding:12px;display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;text-align:left}
+.opt .letter{font-family:var(--display);font-weight:800;font-size:1.3rem;width:1.6em;height:1.6em;border-radius:8px;display:grid;place-items:center;background:var(--surface-2)}
+.opt pre{margin:0;font-family:var(--mono);font-size:.95rem;white-space:pre-wrap;overflow-wrap:normal;word-break:keep-all}
+.opt .tally{font-family:var(--mono);font-weight:600;font-size:1.3rem;min-width:1.6em;text-align:right;font-variant-numeric:tabular-nums}
+.opt .minus{border:1px solid var(--line);background:var(--surface-2);border-radius:6px;width:1.6em;height:1.6em;line-height:1;font-size:.9rem;padding:0}
+.opt-wrap{display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center}
+.opt.right{border-color:var(--good);background:var(--good-soft)}
+.opt.wrong{opacity:.55}
+.votebar{height:6px;border-radius:3px;background:var(--surface-2);grid-column:1/-1;overflow:hidden}
+.votebar i{display:block;height:100%;background:var(--accent);width:0;transition:width .25s}
+
+/* questions */
+.qs{display:grid;gap:10px;margin:0;padding:0;list-style:none}
+.q{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--surface)}
+.q summary{cursor:pointer;font-weight:700;list-style:none;display:flex;gap:8px;align-items:baseline}
+.q summary::-webkit-details-marker{display:none}
+.q summary::after{content:"Show answer";margin-left:auto;font-size:.75rem;font-weight:700;color:var(--accent);white-space:nowrap}
+.q[open] summary::after{content:"Hide"}
+.q .ans{margin-top:8px;padding:10px 12px;border-radius:8px;background:var(--mark-soft)}
+
+/* trace */
+.trace{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+@media (max-width:700px){.trace{grid-template-columns:1fr}}
+.say{background:var(--mark-soft);border-radius:10px;padding:10px 12px;min-height:3.2em;font-size:1.02rem}
+table.vars{border-collapse:collapse;width:100%;font-size:.95rem}
+table.vars th,table.vars td{border:1px solid var(--line);padding:5px 8px;text-align:left}
+table.vars th{background:var(--surface-2);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase}
+table.vars td{font-family:var(--mono)}
+table.vars td.new{background:var(--mark-soft)}
+
+/* parsons */
+.parsons{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px}
+@media (max-width:820px){.parsons{grid-template-columns:1fr}}
+.zone{border:2px dashed var(--line);border-radius:12px;padding:10px;display:grid;gap:8px;align-content:start;min-height:12em;background:var(--surface)}
+.zone h3{font-size:.95rem}
+.pline{display:flex;align-items:center;gap:6px;background:var(--code-bg);color:var(--code-ink);border-radius:8px;padding:6px 6px 6px 10px;font-family:var(--mono);font-size:.98rem;border:2px solid transparent}
+.pline .txt{flex:1;white-space:pre;overflow-x:auto}
+.pline button{border:0;background:var(--code-line);color:var(--code-ink);border-radius:6px;min-width:2em;height:2em;font-size:.85rem;padding:0 6px}
+.pline.bank{cursor:pointer;text-align:left;width:100%}
+.pline.ok{border-color:var(--good)}
+.pline.indent-bad{border-color:var(--warn)}
+.pline.bad{border-color:var(--bad)}
+.feedback{border-radius:10px;padding:10px 12px;font-weight:700}
+.feedback.good{background:var(--good-soft);color:var(--good)}
+.feedback.mid{background:var(--warn-soft);color:var(--warn)}
+.feedback.bad{background:var(--bad-soft);color:var(--bad)}
+/* annotate */
+.annot{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.annot{grid-template-columns:1fr}}
+.arow{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:8px;align-items:stretch}
+@media (max-width:560px){.arow{grid-template-columns:1fr}}
+.acode{background:var(--code-bg);color:var(--code-ink);border-radius:8px;font-family:var(--mono);font-size:1rem;padding:8px 10px;display:flex;gap:10px;align-items:center;overflow-x:auto}
+.acode i{font-style:normal;color:var(--code-muted);min-width:1.2em;text-align:right}
+.acode span{white-space:pre}
+.aslot{border:2px dashed var(--line);border-radius:8px;background:var(--surface);padding:6px 10px;text-align:left;min-height:2.6em;font-size:.95rem;display:block;width:100%}
+.aslot.empty{color:var(--muted)}
+.aslot.target{border-color:var(--mark);background:var(--mark-soft)}
+.aslot.filled{border-style:solid;border-color:var(--accent)}
+.aslot.ok{border-color:var(--good);background:var(--good-soft)}
+.aslot.bad{border-color:var(--bad);background:var(--bad-soft)}
+.aslot.given{border-style:solid;border-color:var(--line);background:var(--surface-2)}
+.acard{border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:9px 12px;text-align:left;font-size:.98rem;display:block;width:100%}
+.acard[aria-pressed="true"]{outline:3px solid var(--mark);background:var(--mark-soft)}
+.acard .tag{font-family:var(--display);font-weight:800;color:var(--accent)}
+.alist{display:grid;gap:8px}
+
+/* gaps */
+.gapcode{background:var(--code-bg);color:var(--code-ink);border-radius:12px;padding:14px 16px;font-family:var(--mono);font-size:1.1rem;line-height:2.2;white-space:pre;overflow-x:auto}
+.gapcode input{background:var(--code-line);color:var(--mark);border:2px solid var(--code-muted);border-radius:6px;font-family:var(--mono);font-size:1rem;padding:0 6px;width:7.5em;text-align:center}
+.gapcode input.ok{border-color:#6FD39A;color:#B9F1CD}
+.gapcode input.bad{border-color:#F2877F}
+.gapcode input.sel{outline:3px solid var(--mark)}
+.bank-words{display:flex;flex-wrap:wrap;gap:8px}
+.word{font-family:var(--mono);border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 12px;font-size:1rem}
+
+/* notes & drawers */
+.notes{border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 10px 10px 0;padding:12px 14px;display:none}
+body.show-notes .notes{display:block}
+.notes h3{font-size:.85rem;letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;font-family:var(--body);font-weight:700}
+.notes ul{margin:4px 0 0;padding-left:1.1em}
+.drawer{position:fixed;right:16px;top:calc(env(safe-area-inset-top,0px) + 120px);width:min(420px,calc(100vw - 32px));max-height:70vh;overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 18px 40px rgba(0,0,0,.18);padding:16px;z-index:40}
+.gl{display:grid;gap:10px}
+.gl div{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.gl dt{font-weight:700}
+.gl .ko{color:var(--accent);font-weight:700}
+.gl dd{margin:0;grid-column:1/-1;font-size:.92rem}
+.picker{font-family:var(--display);font-size:5rem;font-weight:800;text-align:center;line-height:1;padding:10px 0;font-variant-numeric:tabular-nums}
+
+.nav{display:flex;justify-content:space-between;gap:10px;margin-top:26px;padding-top:16px;border-top:1px solid var(--line)}
+.big-q{font-family:var(--display);font-size:1.6rem;font-weight:600;max-width:40ch}
+.obj{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.obj li{display:flex;gap:10px;align-items:baseline;font-size:1.1rem}
+.obj li::before{content:"";flex:none;width:.7em;height:.7em;border-radius:3px;background:var(--mark);transform:translateY(-.05em)}
+.anatomy{display:grid;gap:8px}
+.anatomy .code .lab{background:var(--mark);color:#14232A;border-radius:4px;padding:0 4px}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px}
+.legend div{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface)}
+.legend b{display:block;font-family:var(--mono)}
+.tests{display:grid;gap:6px;margin:0;padding:0;list-style:none}
+.tests li{border-radius:8px;padding:6px 10px;font-family:var(--mono);font-size:.92rem}
+.tests li.pass{background:var(--good-soft);color:var(--good)}
+.tests li.fail{background:var(--bad-soft);color:var(--bad)}
+.status{font-size:.8rem;color:var(--muted)}
+/* live voting */
+.live-btn[aria-pressed="true"]{background:var(--good);color:var(--surface);border-color:var(--good)}
+.livebar{display:none;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:10px}
+body.live .livebar{display:flex}
+.livebar .count{font-family:var(--mono);font-weight:600}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:.8rem;font-weight:700}
+.pill.open{background:var(--good-soft);color:var(--good)}
+.pill.closed{background:var(--surface-2);color:var(--muted)}
+.pill.open::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--good);animation:blink 1.2s infinite}
+@keyframes blink{50%{opacity:.25}}
+.opt .split{display:block;font-size:.72rem;color:var(--muted);font-family:var(--body);font-weight:400;text-align:right}
+.livepanel .code{display:none}
+.roomcode{font-family:var(--mono);font-size:3rem;font-weight:600;letter-spacing:.12em;text-align:center;line-height:1.1}
+.qr{display:grid;place-items:center;background:#fff;border-radius:12px;padding:12px;margin:10px auto;width:max-content}
+.joinurl{font-family:var(--mono);font-size:.85rem;text-align:center;word-break:break-all;color:var(--muted)}
+.dlive{display:none}
+body.live .dlive{display:inline-flex}
+.lmsg{border-radius:10px;padding:10px 12px;background:var(--warn-soft);color:var(--ink);font-size:.92rem}
+/* present mode */
+.present-btn{background:var(--ink);color:var(--ground);border-color:var(--ink);font-weight:700}
+.dock{display:none}
+body.present .top, body.present .nav{display:none}
+body.present .notes{display:none!important}
+body.present .wrap{max-width:1680px}
+html:has(body.present){font-size:calc(var(--fs) * 1.15)}
+body.present main{padding-top:max(20px, env(safe-area-inset-top,0px))}
+body.present{padding-block:0 96px}
+body.present .dock{display:flex;position:fixed;left:0;right:0;margin-inline:auto;width:max-content;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:50;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px;box-shadow:0 10px 30px rgba(0,0,0,.18);opacity:.35;transition:opacity .2s;max-width:calc(100vw - 32px)}
+body.present .dock:hover, body.present .dock:focus-within, body.present .dock.wake{opacity:1}
+.dock .dbtn{border:1px solid var(--line);background:var(--surface-2);border-radius:9px;padding:6px 11px;font-weight:700;font-size:.85rem}
+.dock .dlabel{font-size:.85rem;font-weight:700;padding:0 6px;white-space:nowrap}
+.dock .dlabel span{color:var(--muted);font-weight:400}
+.dock .seg button{padding:5px 9px;font-size:.78rem}
+.dock output{font-family:var(--mono);font-weight:600;padding:0 4px;font-variant-numeric:tabular-nums}
+.dock output.done{color:var(--bad)}
+.dock .sep{width:1px;align-self:stretch;background:var(--line);margin:0 2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="top"><div class="wrap">
+  <div class="top-row">
+    <div class="brand"><h1>Python Functions</h1><span>Year 9 · def, parameters, return</span></div>
+    <div class="tools">
+      <div class="seg" role="group" aria-label="Challenge level">
+        <button data-lv="support" aria-pressed="false">Support</button>
+        <button data-lv="core" aria-pressed="true">Core</button>
+        <button data-lv="stretch" aria-pressed="false">Stretch</button>
+      </div>
+      <div class="timer" aria-label="Timer">
+        <output id="tOut">3:00</output>
+        <button data-min="1">1m</button><button data-min="3">3m</button><button data-min="5">5m</button>
+        <button id="tGo" aria-label="Start or pause timer">▶</button>
+      </div>
+      <button class="tbtn" id="glossBtn" aria-pressed="false">Key words</button>
+      <button class="tbtn" id="pickBtn" aria-pressed="false">Pick a student</button>
+      <button class="tbtn" id="notesBtn" aria-pressed="false">Teacher notes</button>
+      <button class="tbtn" id="aMinus" aria-label="Smaller text">A−</button>
+      <button class="tbtn" id="aPlus" aria-label="Larger text">A+</button>
+      <button class="tbtn live-btn" id="liveBtn" aria-pressed="false">Live voting</button>
+      <button class="tbtn present-btn" id="presentBtn" title="Present mode (P)">⛶ Present</button>
+    </div>
+  </div>
+  <nav class="steps" id="steps" aria-label="Lesson stages"></nav>
+</div></div>
+
+<aside class="drawer" id="gloss" hidden aria-label="Key words">
+  <div class="bar" style="justify-content:space-between;margin-bottom:10px"><h3>Key words · 핵심 용어</h3><button class="tbtn" data-close="gloss">Close</button></div>
+  <dl class="gl">
+    <div><dt>function</dt><span class="ko">함수</span><dd>A named block of code that does one job. You can use it again and again.</dd></div>
+    <div><dt>define · <code>def</code></dt><span class="ko">정의하다</span><dd>Create a function. <code>def area(length, width):</code></dd></div>
+    <div><dt>call</dt><span class="ko">호출하다</span><dd>Run the function by using its name. <code>area(4, 3)</code></dd></div>
+    <div><dt>parameter</dt><span class="ko">매개변수</span><dd>The name in the brackets when you <b>define</b> the function. <code>length</code></dd></div>
+    <div><dt>argument</dt><span class="ko">인수 (인자)</span><dd>The value you give when you <b>call</b> the function. <code>4</code></dd></div>
+    <div><dt>return</dt><span class="ko">반환하다</span><dd>Send a value back to where the function was called.</dd></div>
+    <div><dt>local variable</dt><span class="ko">지역 변수</span><dd>A variable made inside a function. It only exists inside that function.</dd></div>
+    <div><dt>indentation</dt><span class="ko">들여쓰기</span><dd>The 4 spaces that show which lines belong inside the function.</dd></div>
+  </dl>
+</aside>
+
+<aside class="drawer livepanel" id="livePanel" hidden aria-label="Live voting">
+  <div class="bar" style="justify-content:space-between;margin-bottom:6px"><h3>Live voting</h3><button class="tbtn" data-close="livePanel">Close</button></div>
+  <div id="liveBody"></div>
+</aside>
+<aside class="drawer" id="picker" hidden aria-label="Pick a student">
+  <div class="bar" style="justify-content:space-between;margin-bottom:6px"><h3>Pick a student number</h3><button class="tbtn" data-close="picker">Close</button></div>
+  <div class="picker" id="pickNum">–</div>
+  <div class="bar" style="justify-content:center">
+    <label class="small" for="classSize">Class size</label>
+    <input id="classSize" type="number" min="2" max="40" value="24" style="width:4.5em;border:1px solid var(--line);border-radius:8px;padding:4px 6px;background:var(--surface-2)">
+    <button class="btn primary" id="pickGo">Pick</button>
+  </div>
+  <p class="small muted" style="text-align:center;margin-top:8px">Numbers aren't picked again until everyone has had a turn.</p>
+</aside>
+
+<div class="dock" id="dock" role="toolbar" aria-label="Presenter controls">
+  <button class="dbtn" id="dPrev" aria-label="Previous stage">←</button>
+  <span class="dlabel" id="dLabel"></span>
+  <button class="dbtn" id="dNext" aria-label="Next stage">→</button>
+  <span class="sep"></span>
+  <div class="seg" role="group" aria-label="Challenge level">
+    <button data-lv="support" aria-pressed="false">Support</button><button data-lv="core" aria-pressed="true">Core</button><button data-lv="stretch" aria-pressed="false">Stretch</button>
+  </div>
+  <span class="sep"></span>
+  <output id="dTime">3:00</output><button class="dbtn" id="dGo" aria-label="Start or pause timer">▶</button>
+  <button class="dbtn" id="dGloss">Key words</button>
+  <button class="dbtn" id="dPick">Pick</button>
+  <button class="dbtn" id="dA" aria-label="Larger text">A+</button>
+  <span class="sep"></span>
+  <button class="dbtn dlive" id="dLive" aria-label="Show room code"></button>
+  <button class="dbtn" id="dExit">Exit (Esc)</button>
+</div>
+<main class="wrap" id="main"></main>
+
+<script>
+/* ---------- helpers ---------- */
+const $ = (s, r=document) => r.querySelector(s);
+const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const KW = new Set(['def','return','if','elif','else','for','while','in','and','or','not','True','False','None','import','from','as','pass','break','continue','try','except','lambda']);
+const BI = new Set(['print','round','len','int','str','float','range','input','abs','min','max','sum']);
+function hl(line){
+  const re = /(#.*$)|("[^"]*"|'[^']*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
+  let out='', last=0, m, prevDef=false;
+  while((m = re.exec(line))){
+    out += esc(line.slice(last, m.index));
+    if(m[1]) out += `<span class="tk-c">${esc(m[1])}</span>`;
+    else if(m[2]) out += `<span class="tk-s">${esc(m[2])}</span>`;
+    else if(m[3]) out += `<span class="tk-n">${m[3]}</span>`;
+    else { const w=m[4];
+      if(prevDef){ out += `<span class="tk-f">${w}</span>`; prevDef=false; }
+      else if(KW.has(w)){ out += `<span class="tk-k">${w}</span>`; prevDef = (w==='def'); }
+      else if(BI.has(w)) out += `<span class="tk-f">${w}</span>`;
+      else out += w; }
+    last = re.lastIndex;
+  }
+  return out + esc(line.slice(last));
+}
+function codeBlock(src, id){
+  return `<div class="code"${id?` id="${id}"`:''}>` + src.split('\n').map((l,i)=>`<div class="ln" data-l="${i+1}"><i>${i+1}</i><span>${hl(l)||' '}</span></div>`).join('') + `</div>`;
+}
+
+/* ---------- python runner (Skulpt) ---------- */
+const TEST = '\u00a7T\u00a7';
+function friendly(err){
+  if(/IndentationError|unexpected indent|expected an indented block/i.test(err)) return 'Check your indentation: lines inside a function need 4 spaces.';
+  if(/NameError/.test(err)) return 'Python doesn\'t recognise a name. Check your spelling, or whether the variable only exists inside the function.';
+  if(/SyntaxError/.test(err)) return 'Check for a missing colon after def, missing brackets or quotes, or a line inside the function that needs 4 spaces of indentation.';
+  if(/TypeError.*argument/i.test(err)) return 'The number of arguments in the call doesn\'t match the number of parameters.';
+  if(/TypeError/.test(err)) return 'You may be mixing text and numbers, for example "5" + 5.';
+  if(/TimeLimit|time limit/i.test(err)) return 'The program ran for too long. Is there a loop that never ends?';
+  return '';
+}
+function runPython(code){
+  return new Promise(resolve=>{
+    if(!window.Sk){ resolve({ok:false, out:'', err:'The Python runner could not load. Check the internet connection, or use the expected output in the teacher notes.'}); return; }
+    let out='';
+    Sk.configure({
+      output: t => { out += t; },
+      read: x => { if(Sk.builtinFiles===undefined || Sk.builtinFiles.files[x]===undefined) throw "File not found: '"+x+"'"; return Sk.builtinFiles.files[x]; },
+      __future__: Sk.python3, execLimit: 4000,
+      inputfun: () => { throw new Sk.builtin.Exception('input() is not used in this lesson — give the function arguments instead.'); }
+    });
+    Sk.misceval.asyncToPromise(() => Sk.importMainWithBody('<stdin>', false, code, true))
+      .then(() => resolve({ok:true, out}), e => resolve({ok:false, out, err: String(e)}));
+  });
+}
+function showResult(pre, r){
+  const lines = r.out.split('\n');
+  const shown = lines.filter(l => !l.startsWith(TEST)).join('\n');
+  let html = esc(shown.replace(/\n$/,''));
+  if(!r.ok){ html += (html?'\n':'') + `<span class="err">${esc(r.err)}</span>`; const f = friendly(r.err); if(f) html += `<span class="hint">Hint: ${esc(f)}</span>`; }
+  if(!html) html = '<span style="color:var(--code-muted)">(no output)</span>';
+  pre.innerHTML = html;
+  return lines.filter(l => l.startsWith(TEST)).map(l => { const p = l.slice(TEST.length).split('\u00a7'); return {name:p[0], pass:p[1]==='True'}; });
+}
+function testCode(tests){
+  return '\n\n' + tests.map(t => `try:\n    __ok = bool(${t.expr})\nexcept Exception:\n    __ok = False\nprint("${TEST}${t.label.replace(/"/g,'\\"')}\u00a7" + str(__ok))`).join('\n');
+}
+
+/* ---------- editor ---------- */
+function makeEditor(host, start, opts={}){
+  host.innerHTML = `
+    <div class="editor"><div class="gutter" aria-hidden="true"></div><textarea spellcheck="false" autocapitalize="off" autocomplete="off" id="${opts.id}" aria-label="Python code editor"></textarea></div>
+    <div class="bar"><button class="btn primary run">▶ Run</button>${opts.tests?'<button class="btn mark check">✓ Check my code</button>':''}<button class="btn reset">Reset code</button><span class="status"></span></div>
+    <div class="out-label">Output</div><pre class="out" aria-live="polite"></pre>
+    ${opts.tests?'<ul class="tests" aria-live="polite"></ul>':''}`;
+  const ta = $('textarea', host), gut = $('.gutter', host), pre = $('pre', host), st = $('.status', host);
+  let original = start;
+  const sync = () => { const n = ta.value.split('\n').length; gut.textContent = Array.from({length:n},(_,i)=>i+1).join('\n'); gut.scrollTop = ta.scrollTop; };
+  ta.value = start; sync();
+  ta.addEventListener('input', sync); ta.addEventListener('scroll', () => gut.scrollTop = ta.scrollTop);
+  ta.addEventListener('keydown', e => {
+    if(e.key === 'Tab'){ e.preventDefault(); const s=ta.selectionStart; ta.setRangeText('    ', s, ta.selectionEnd, 'end'); sync(); }
+    if(e.key === 'Enter'){ const s=ta.selectionStart, before=ta.value.slice(0,s), line=before.split('\n').pop(); let ind=(line.match(/^ */)||[''])[0]; if(/:\s*$/.test(line)) ind+='    '; e.preventDefault(); ta.setRangeText('\n'+ind, s, ta.selectionEnd, 'end'); sync(); }
+  });
+  const go = async (withTests) => {
+    st.textContent = 'Running…';
+    const t = withTests && opts.tests ? opts.tests() : null;
+    const r = await runPython(ta.value + (t ? testCode(t) : ''));
+    const res = showResult(pre, r); st.textContent = '';
+    if(t){ const ul = $('.tests', host);
+      if(!r.ok && !res.length){ ul.innerHTML = `<li class="fail">Fix the error first, then check again.</li>`; return; }
+      ul.innerHTML = res.map(x=>`<li class="${x.pass?'pass':'fail'}">${x.pass?'✓':'✗'} ${esc(x.name)}</li>`).join('');
+      if(res.length && res.every(x=>x.pass)) ul.insertAdjacentHTML('beforeend','<li class="pass">All tests passed.</li>');
+    }
+  };
+  $('.run', host).onclick = () => go(false);
+  if(opts.tests) $('.check', host).onclick = () => go(true);
+  $('.reset', host).onclick = () => { ta.value = original; sync(); pre.textContent=''; const ul=$('.tests',host); if(ul) ul.innerHTML=''; };
+  return { set(code){ original = code; ta.value = code; sync(); pre.textContent=''; const ul=$('.tests',host); if(ul) ul.innerHTML=''; }, get value(){ return ta.value; } };
+}
+
+/* ---------- vote widget ---------- */
+const WIDGETS = {};
+function voteWidget(host, id, title, opts, correct, code=''){
+  const L = i => 'ABCDEF'[i];
+  host.innerHTML = `<div class="options">${opts.map((o,i)=>`
+    <div class="opt-wrap"><button class="opt" data-i="${i}" aria-label="Add a hand-count vote for option ${L(i)}"><span class="letter">${L(i)}</span><pre>${esc(o)}</pre><span class="tally">0<span class="split"></span></span><span class="votebar"><i></i></span></button><button class="minus" data-i="${i}" aria-label="Remove a hand-count vote from ${L(i)}">−</button></div>`).join('')}</div>
+    <div class="bar">${correct>=0?'<button class="btn mark reveal">Reveal answer</button>':''}<button class="btn resetv">Reset votes</button><span class="status handhint">Tap an option to add a vote for each hand raised.</span></div>
+    <div class="livebar"><button class="btn primary lopen">Open voting on devices</button><button class="btn lclose">Close voting</button><span class="pill closed lstate">Not open</span><span class="small muted"><span class="count lcount">0</span> device votes</span></div>`;
+  const manual = opts.map(()=>0); let live = opts.map(()=>0);
+  const draw = () => { const tot = manual.map((m,i)=>m+live[i]); const max = Math.max(1, ...tot);
+    $$('.opt', host).forEach((b,i)=>{ const t=$('.tally',b); t.firstChild.textContent = tot[i]; $('.split',t).textContent = (document.body.classList.contains('live') && manual[i]) ? `${live[i]} + ${manual[i]} hands` : ''; $('.votebar i',b).style.width = (tot[i]/max*100)+'%'; });
+    $('.lcount', host).textContent = live.reduce((a,b)=>a+b,0); };
+  $$('.opt', host).forEach(b => b.onclick = () => { manual[+b.dataset.i]++; draw(); });
+  $$('.minus', host).forEach(b => b.onclick = () => { const i=+b.dataset.i; manual[i]=Math.max(0,manual[i]-1); draw(); });
+  const reveal = () => $$('.opt', host).forEach((b,i)=>b.classList.add(i===correct?'right':'wrong'));
+  if(correct>=0) $('.reveal', host).onclick = () => { reveal(); Live.reveal(id, correct); };
+  $('.resetv', host).onclick = () => { manual.fill(0); draw(); $$('.opt', host).forEach(b=>b.classList.remove('right','wrong')); Live.clearVotes(id); };
+  $('.lopen', host).onclick = () => Live.open(id, {id, title, code, options:opts, hasAnswer: correct>=0});
+  $('.lclose', host).onclick = () => Live.close();
+  WIDGETS[id] = {
+    setLive(arr){ live = opts.map((_,i)=>arr[i]||0); draw(); },
+    setState(active, open){ const me = active===id; const st=$('.lstate',host);
+      st.className = 'pill lstate ' + (me&&open?'open':'closed'); st.textContent = me&&open ? 'Open: students can vote' : me ? 'Closed' : 'Not open';
+      $('.lopen',host).disabled = me&&open; $('.lclose',host).disabled = !(me&&open); },
+    redraw: draw
+  };
+  WIDGETS[id].setState('', false);
+}
+
+/* ---------- lesson content ---------- */
+const AREA = `def area(length, width):
+    result = length * width
+    return result
+
+room = area(4, 3)
+print("Room:", room)
+print("Desk:", area(2, 1))`;
+
+const STAGES = [
+ {key:'intro', label:'Why functions?'},
+ {key:'predict', label:'Predict', primm:true},
+ {key:'run', label:'Run', primm:true},
+ {key:'investigate', label:'Investigate', primm:true},
+ {key:'annotate', label:'Annotate code'},
+ {key:'parsons', label:'Parsons problem'},
+ {key:'gaps', label:'Fill the gaps'},
+ {key:'modify', label:'Modify', primm:true},
+ {key:'make', label:'Make', primm:true},
+ {key:'exit', label:'Exit ticket'},
+];
+
+const main = $('#main');
+main.innerHTML = STAGES.map((s,i)=>`<section class="stage" id="st-${s.key}" ${i?'hidden':''} aria-labelledby="h-${s.key}"></section>`).join('') +
+  `<div class="nav"><button class="btn" id="prev">← Back</button><span class="status" id="pos"></span><button class="btn primary" id="next">Next →</button></div>`;
+
+/* 1. intro */
+$('#st-intro').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">Starter · 5 minutes</div><h2 id="h-intro">Why do programmers use functions?</h2></div></div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Look at this program. What is the problem with it?</h3>
+      ${codeBlock(`print("-----------")
+print("  SCORE: 10  ")
+print("-----------")
+# ...later in the game...
+print("-----------")
+print("  SCORE: 25  ")
+print("-----------")
+# ...and again...
+print("-----------")
+print("  SCORE: 40  ")
+print("-----------")`)}
+      <details class="q"><summary>What did the class notice?</summary><div class="ans">The same 3 lines are copied again and again. To change the design, you would need to edit every copy, and it's easy to miss one. A <b>function</b> lets us write the code <b>once</b>, give it a name, and <b>call</b> it whenever we need it.</div></details>
+    </div>
+    <div class="panel">
+      <h3>The same idea as a function</h3>
+      ${codeBlock(`def show_score(score):
+    print("-----------")
+    print("  SCORE:", score)
+    print("-----------")
+
+show_score(10)
+show_score(25)
+show_score(40)`)}
+      <div class="legend">
+        <div><b>def</b>defines (creates) a function</div>
+        <div><b>show_score</b>the function's name</div>
+        <div><b>score</b>a parameter: a value the function needs</div>
+        <div><b>show_score(10)</b>a call with the argument 10</div>
+      </div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>By the end of this lesson I can…</h3>
+    <ul class="obj">
+      <li>define a function using <code>def</code> and call it by its name</li>
+      <li>explain the difference between a parameter and an argument</li>
+      <li>use <code>return</code> to send a value back from a function</li>
+    </ul>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Give pairs 60 seconds of <b>think–pair–share</b> on the first program before showing the answer. Pair talk comes before any writing, because many students find reading harder than speaking.</li>
+    <li>Open <b>Key words</b> and go through <i>parameter / argument / return</i> with the Korean translations. Leave it open during the Predict stage for Support students.</li>
+    <li>Point out that the lesson follows PRIMM (the dashed stages): Predict → Run → Investigate → Modify → Make.</li></ul></div>`;
+
+/* 2. predict */
+$('#st-predict').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">PRIMM · Predict</div><h2 id="h-predict">What will this program print?</h2></div>
+  <p class="lead">Don't run it yet. Talk to your partner and agree on a prediction.</p></div>
+  <div class="cols">
+    <div class="panel">${codeBlock(AREA)}
+      <p data-show="support" class="small"><span class="tier support">Support</span>Start at line 5. That is the first line that <i>does</i> something. Lines 1–3 only create the function.</p>
+      <p data-show="core" class="small"><span class="tier core">Core</span>Follow the values: which number goes into <code>length</code>, and which into <code>width</code>?</p>
+      <p data-show="stretch" class="small"><span class="tier stretch">Stretch</span>How many times does line 2 run in total? What if line 3 was deleted?</p>
+    </div>
+    <div class="panel"><h3>Class vote</h3><div id="predictVote"></div></div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Give 1 minute of silent thinking, then pair discussion. Students then vote with hands up, and you tap an option to count each vote. Don't reveal the answer yet. Students check their prediction on the next stage.</li>
+    <li>Common misconception: option B (students think <code>return result</code> prints the word "result"). Another: option C (they think nothing happens because the function is "just defined").</li>
+    <li>Use <b>Pick a student</b> to ask someone to explain their pair's choice.</li></ul></div>`;
+voteWidget($('#predictVote'), 'predict', 'What will this program print?', ['Room: 12\nDesk: 2','Room: result\nDesk: result','(nothing is printed)','Room: 7\nDesk: 3'], 0, AREA);
+
+/* 3. run + trace */
+const TRACE = [
+ {l:1, say:'Python reads the <b>definition</b> and remembers the function <code>area</code>. Nothing inside it runs yet.', g:{}, loc:null, out:''},
+ {l:5, say:'The function is <b>called</b> with the arguments <code>4</code> and <code>3</code>. Python jumps up to the function.', g:{}, loc:{length:4,width:3}, out:'', nw:['length','width']},
+ {l:2, say:'<code>result = 4 * 3</code>, so <code>result</code> is <b>12</b>. It is a <b>local variable</b>, so it only exists inside the function.', g:{}, loc:{length:4,width:3,result:12}, out:'', nw:['result']},
+ {l:3, say:'<code>return</code> sends <b>12</b> back to the line that called the function.', g:{}, loc:{length:4,width:3,result:12}, out:''},
+ {l:5, say:'The call <code>area(4, 3)</code> is replaced by 12, so <code>room = 12</code>. The local variables have now gone.', g:{room:12}, loc:null, out:'', nw:['room']},
+ {l:6, say:'This prints the text and the value of <code>room</code>.', g:{room:12}, loc:null, out:'Room: 12'},
+ {l:7, say:'A second call, <code>area(2, 1)</code>, happens <i>inside</i> the print. Python jumps back to the function with new arguments.', g:{room:12}, loc:{length:2,width:1}, out:'Room: 12', nw:['length','width']},
+ {l:2, say:'<code>result = 2 * 1</code>, so <code>result</code> is <b>2</b>.', g:{room:12}, loc:{length:2,width:1,result:2}, out:'Room: 12', nw:['result']},
+ {l:3, say:'<code>return</code> sends <b>2</b> back to line 7.', g:{room:12}, loc:{length:2,width:1,result:2}, out:'Room: 12'},
+ {l:7, say:'The print shows "Desk:" and the returned value, 2. The program has finished.', g:{room:12}, loc:null, out:'Room: 12\nDesk: 2'},
+];
+$('#st-run').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">PRIMM · Run</div><h2 id="h-run">Run it. Was your prediction right?</h2></div>
+  <p class="lead">Run the code, then step through it line by line to see <i>why</i> it prints what it does.</p></div>
+  <div class="cols">
+    <div class="panel">${codeBlock(AREA,'traceCode')}
+      <div class="bar"><button class="btn primary" id="runArea">▶ Run program</button></div>
+      <div class="out-label">Output</div><pre class="out" id="runOut"></pre>
+    </div>
+    <div class="panel">
+      <h3>Step through (trace)</h3>
+      <div class="bar"><button class="btn" id="tBack">← Back</button><button class="btn mark" id="tStep">Next step →</button><button class="btn" id="tReset">Restart</button><span class="status" id="tPos"></span></div>
+      <div class="trace">
+        <div><div class="out-label">Main program variables</div><table class="vars" id="tG"></table></div>
+        <div><div class="out-label">Inside area() (local)</div><table class="vars" id="tL"></table></div>
+      </div>
+      <div class="out-label">Output so far</div><pre class="out" id="tOutp"></pre>
+      <div class="out-label">What is happening</div>
+      <div class="say" id="tSay" aria-live="polite">Press <b>Next step</b> to follow Python line by line.</div>
+    </div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Go back to the class vote on the Predict stage and compare it with the actual output.</li>
+    <li>Step through with the class. Before each click, ask "Which line will Python go to next?" Mini whiteboards work well here.</li>
+    <li>Key points: the definition doesn't run on its own; arguments are copied into parameters; local variables disappear after <code>return</code>.</li>
+    <li>If the runner doesn't load, the expected output is: <code>Room: 12</code> / <code>Desk: 2</code>.</li></ul></div>`;
+$('#runArea').onclick = async () => { $('#runOut').textContent='Running…'; showResult($('#runOut'), await runPython(AREA)); };
+let tI = -1;
+function varTable(obj, nw=[]){ if(!obj) return '<tr><td style="font-family:var(--body);color:var(--muted)">(not running)</td></tr>'; const k=Object.keys(obj); if(!k.length) return '<tr><td style="font-family:var(--body);color:var(--muted)">(none yet)</td></tr>'; return '<tr><th>name</th><th>value</th></tr>'+k.map(n=>`<tr><td${nw.includes(n)?' class="new"':''}>${n}</td><td${nw.includes(n)?' class="new"':''}>${obj[n]}</td></tr>`).join(''); }
+function drawTrace(){
+  $$('#traceCode .ln').forEach(el=>el.classList.remove('hl'));
+  if(tI<0){ $('#tSay').innerHTML='Press <b>Next step</b> to follow Python line by line.'; $('#tG').innerHTML=varTable({}); $('#tL').innerHTML=varTable(null); $('#tOutp').textContent=''; $('#tPos').textContent=''; return; }
+  const s = TRACE[tI];
+  $(`#traceCode .ln[data-l="${s.l}"]`).classList.add('hl');
+  $('#tSay').innerHTML = `<b>Line ${s.l}:</b> ${s.say}`;
+  $('#tG').innerHTML = varTable(s.g, s.nw||[]); $('#tL').innerHTML = varTable(s.loc, s.nw||[]);
+  $('#tOutp').textContent = s.out; $('#tPos').textContent = `Step ${tI+1} of ${TRACE.length}`;
+  $('#tStep').disabled = tI>=TRACE.length-1; $('#tBack').disabled = tI<=0;
+}
+$('#tStep').onclick=()=>{ if(tI<TRACE.length-1){tI++;drawTrace();} };
+$('#tBack').onclick=()=>{ if(tI>0){tI--;drawTrace();} };
+$('#tReset').onclick=()=>{ tI=-1; $('#tStep').disabled=false; $('#tBack').disabled=true; drawTrace(); };
+drawTrace(); $('#tBack').disabled=true;
+
+/* 4. investigate */
+const Q = [
+ ['support','What is the name of the function?','<code>area</code>. It comes straight after <code>def</code>.'],
+ ['support','What are the two parameters?','<code>length</code> and <code>width</code>. They are the names in the brackets on the <code>def</code> line.'],
+ ['support','Which line sends the answer back?','Line 3: <code>return result</code>.'],
+ ['core','What is the difference between a parameter and an argument? Give one example of each from the code.','A <b>parameter</b> is the name in the definition (<code>length</code>). An <b>argument</b> is the actual value passed in the call (<code>4</code>).'],
+ ['core','What value does <code>result</code> hold the second time the function runs?','<b>2</b>, because <code>area(2, 1)</code> gives 2 × 1.'],
+ ['core','Why does nothing happen when Python reads lines 1–3?','Defining a function only stores it. The code inside runs only when the function is <b>called</b>.'],
+ ['stretch','Delete line 3 and run the program. What prints, and why?','<code>Room: None</code> / <code>Desk: None</code>. Without <code>return</code>, a function sends back <code>None</code>.'],
+ ['stretch','Add <code>print(result)</code> at the end of the program. What happens, and why?','A <b>NameError</b>. <code>result</code> is a local variable, so it only exists inside the function.'],
+ ['stretch','Rewrite the function so its body is only one line.','<code>return length * width</code>'],
+];
+$('#st-investigate').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">PRIMM · Investigate</div><h2 id="h-investigate">Investigate: how does it work?</h2></div>
+  <p class="lead">Answer the questions for your level. Test your ideas by changing the code and running it.</p></div>
+  <div class="cols">
+    <div class="panel"><ul class="qs">${Q.map(([lv,q,a])=>`<li data-show="${lv}"><details class="q"><summary><span class="tier ${lv}">${lv}</span><span>${q}</span></summary><div class="ans">${a}</div></details></li>`).join('')}</ul>
+      <p class="small muted">Change the level (Support, Core or Stretch) at the top to see different questions.</p></div>
+    <div class="panel"><h3>Test your ideas</h3><div id="invEd"></div></div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Start with the <b>Support</b> questions as a whole class (cold call with Pick a student), then switch to Core. Stretch students can try their questions in the editor on their own devices.</li>
+    <li>Ask students to answer in full sentences using the key words: "The <u>parameter</u> is… The <u>argument</u> is…".</li>
+    <li>Live check: "Show me on your whiteboard: which line runs first?" (answer: line 5).</li></ul></div>`;
+makeEditor($('#invEd'), AREA, {id:'invCode'});
+
+/* 4b. annotate */
+const ANN_CODE = `def average(a, b, c):
+    total = a + b + c
+    mean = total / 3
+    return mean
+
+score = average(70, 85, 64)
+print("Average:", round(score, 1))`;
+const ANN = [
+  {line:1, text:'Defines a function called <b>average</b> with three parameters', lv:['support','core','stretch']},
+  {line:2, text:'Creates a <b>local variable</b> that adds the three values together', lv:['core','stretch']},
+  {line:3, text:'Divides the total by 3 to work out the mean', lv:['support','core','stretch']},
+  {line:4, text:'Sends the answer back to where the function was called', lv:['support','core','stretch']},
+  {line:6, text:'<b>Calls</b> the function with three arguments and stores the answer', lv:['core','stretch']},
+  {line:7, text:'Displays the answer rounded to 1 decimal place', lv:['support','core','stretch']},
+];
+const ANN_STRETCH = [
+  {line:1, text:'The <b>header</b>: keyword, identifier and parameter list'},
+  {line:2, text:'Assigns the sum of the <b>parameters</b> to a local variable'},
+  {line:3, text:'Arithmetic that produces a <b>float</b>'},
+  {line:4, text:'Ends the function and passes a value back to the caller'},
+  {line:6, text:'A function call with three <b>arguments</b>; the return value is assigned'},
+  {line:7, text:'Outputs a string and a value rounded by a built-in function'},
+];
+const ANN_DISTRACT = [
+  {line:0, text:'Asks the user to type in a number'},
+  {line:0, text:'Repeats the code inside the function three times'},
+];
+$('#st-annotate').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">Annotate code</div><h2 id="h-annotate">Match each annotation to its line of code</h2></div>
+  <p class="lead">Tap an annotation, then tap the line it describes. Discuss with your partner before you place each one.</p></div>
+  <p data-show="support"><span class="tier support">Support</span>Two lines are done for you. Use the <b>Key words</b> button if you get stuck.</p>
+  <p data-show="core"><span class="tier core">Core</span>Match all six annotations. Blank line 5 does not need one.</p>
+  <p data-show="stretch"><span class="tier stretch">Stretch</span>These annotations use technical vocabulary, and <b>two of them don't match any line</b>. Leave those in the bank and explain why they're wrong.</p>
+  <div class="annot">
+    <div class="panel"><h3>The code</h3><div class="alist" id="aRows"></div></div>
+    <div class="panel"><h3>Annotations</h3><div class="alist" id="aBank"></div>
+      <div class="bar"><button class="btn mark" id="aCheck">✓ Check</button><button class="btn" id="aReveal">Reveal answers</button><button class="btn" id="aReset">Start again</button></div>
+      <div id="aFb" aria-live="polite"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Now you try: annotate with comments</h3>
+    <p>In Python, annotations are written as <b>comments</b> that start with <code>#</code>. Python ignores them, but they help people understand your code. Add a comment to each line, then run it to check the program still works.</p>
+    <div id="annEd"></div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>At the front: pick a student to choose an annotation, then ask the class "Which line? Thumbs up if you agree." Ask them to point to the words in the code that gave it away.</li>
+    <li>This checks <b>reading</b> of both English and code, so it suits the low reading levels in all classes. Pre-teach <i>local variable</i>, <i>arguments</i> and <i>calls</i>.</li>
+    <li>Stretch distractors: nothing asks for input (there's no <code>input()</code>), and nothing repeats (there's no loop).</li>
+    <li>Expected output: <code>Average: 73.0</code>.</li></ul></div>`;
+let aState = {slots:{}, bank:[], sel:null, given:[]};
+function aSetup(){
+  const lv = document.body.dataset.level;
+  let cards = (lv==='stretch' ? ANN_STRETCH.concat(ANN_DISTRACT) : ANN.filter(a=>a.lv.includes(lv))).map((a,i)=>({...a, id:'a'+i}));
+  const given = lv==='support' ? cards.filter(c=>c.line===1||c.line===7) : [];
+  aState = {slots:{}, sel:null, given:given.map(g=>g.line), bank:[]};
+  given.forEach(g=>aState.slots[g.line]=g);
+  let bank = cards.filter(c=>!given.includes(c));
+  for(let i=bank.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [bank[i],bank[j]]=[bank[j],bank[i]]; }
+  aState.bank = bank; aState.all = cards;
+  $('#aFb').innerHTML=''; aDraw();
+}
+function aDraw(){
+  const lines = ANN_CODE.split('\n');
+  const needed = new Set(aState.all.filter(c=>c.line).map(c=>c.line));
+  $('#aRows').innerHTML = lines.map((l,i)=>{ const n=i+1; if(!l.trim()) return `<div class="arow"><div class="acode"><i>${n}</i><span> </span></div><div></div></div>`;
+    const c = aState.slots[n]; const given = aState.given.includes(n);
+    const slot = !needed.has(n) ? '<div></div>' : `<button class="aslot ${c?(given?'given':'filled'):'empty'}${aState.sel&&!c?' target':''}" data-line="${n}" ${given?'disabled':''} aria-label="Annotation for line ${n}">${c?c.text:'Tap to place an annotation'}</button>`;
+    return `<div class="arow"><div class="acode"><i>${n}</i><span>${hl(l)}</span></div>${slot}</div>`; }).join('');
+  $('#aBank').innerHTML = aState.bank.length ? aState.bank.map(c=>`<button class="acard" data-id="${c.id}" aria-pressed="${aState.sel===c.id}"><span>${c.text}</span></button>`).join('') : '<p class="small muted">All annotations placed. Press Check.</p>';
+  $$('#aBank .acard').forEach(b=>b.onclick=()=>{ aState.sel = aState.sel===b.dataset.id ? null : b.dataset.id; aDraw(); });
+  $$('#aRows .aslot').forEach(b=>b.onclick=()=>{ const n=+b.dataset.line; const cur=aState.slots[n];
+    if(aState.sel){ const k=aState.bank.findIndex(c=>c.id===aState.sel); const card=aState.bank.splice(k,1)[0]; if(cur) aState.bank.push(cur); aState.slots[n]=card; aState.sel=null; }
+    else if(cur){ aState.bank.push(cur); delete aState.slots[n]; }
+    $('#aFb').innerHTML=''; aDraw(); });
+}
+$('#aCheck').onclick = () => { let r=0, t=0;
+  $$('#aRows .aslot').forEach(b=>{ const n=+b.dataset.line; if(aState.given.includes(n)) return; t++; const c=aState.slots[n]; b.classList.remove('ok','bad'); if(!c) return; if(c.line===n){ b.classList.add('ok'); r++; } else b.classList.add('bad'); });
+  const left = aState.bank.filter(c=>c.line).length;
+  $('#aFb').innerHTML = `<div class="feedback ${r===t?'good':r>=t/2?'mid':'bad'}">${r} of ${t} correct${r===t?'. Well done!':left?'. Some annotations still need placing.':'. The red ones need to be swapped.'}</div>`; };
+$('#aReveal').onclick = () => { aState.bank = aState.all.filter(c=>!c.line); aState.slots={}; aState.all.filter(c=>c.line).forEach(c=>aState.slots[c.line]=c); aState.sel=null; aDraw(); $('#aCheck').click(); };
+$('#aReset').onclick = aSetup;
+makeEditor($('#annEd'), `def average(a, b, c):   # 
+    total = a + b + c   # 
+    mean = total / 3   # 
+    return mean   # 
+
+score = average(70, 85, 64)   # 
+print("Average:", round(score, 1))   # `, {id:'annCode'});
+
+/* 5. parsons */
+const PARSONS = {
+  lines:[
+    {id:'a', t:'def to_fahrenheit(celsius):', ind:0},
+    {id:'b', t:'fahrenheit = celsius * 9 / 5 + 32', ind:1},
+    {id:'c', t:'return fahrenheit', ind:1},
+    {id:'d', t:'temp = to_fahrenheit(30)', ind:0},
+    {id:'e', t:'print("30 C is", temp, "F")', ind:0},
+  ],
+  distract:[ {id:'x', t:'return celsius', ind:1}, {id:'y', t:'print(fahrenheit)', ind:0} ],
+  order:['a','b','c','d','e']
+};
+$('#st-parsons').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">Parsons problem</div><h2 id="h-parsons">Put the lines in the right order</h2></div>
+  <p class="lead">Build a program that converts 30 °C to Fahrenheit using a function. Tap a line to add it to your program.</p></div>
+  <p data-show="support"><span class="tier support">Support</span>The indentation has been done for you. Only the order matters. Remember: define the function <b>before</b> you call it.</p>
+  <p data-show="core"><span class="tier core">Core</span>Put the lines in order <b>and</b> set the indentation with ⇤ and ⇥. Lines inside the function need one indent.</p>
+  <p data-show="stretch"><span class="tier stretch">Stretch</span>Order and indent the lines. <b>Two lines are not needed.</b> Leave them in the bank, and be ready to explain why they're wrong.</p>
+  <div class="parsons">
+    <div class="zone" id="pBank" aria-label="Line bank"><h3>Line bank</h3></div>
+    <div class="zone" id="pProg" aria-label="Your program"><h3>Your program</h3></div>
+  </div>
+  <div class="bar"><button class="btn mark" id="pCheck">✓ Check order</button><button class="btn primary" id="pRun">▶ Run my program</button><button class="btn" id="pShuffle">Start again</button></div>
+  <div id="pFb" aria-live="polite"></div>
+  <pre class="out" id="pOut" hidden></pre>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Do this at the front: a pair tells you which line comes next, you tap it, and the class agrees or challenges ("Thumbs up if you agree").</li>
+    <li>The level can be changed during the task. Changing it resets the puzzle.</li>
+    <li>Stretch distractors: <code>return celsius</code> (sends back the wrong value) and <code>print(fahrenheit)</code> (NameError, because fahrenheit is local).</li>
+    <li>Expected output: <code>30 C is 86.0 F</code>. Ask why it prints 86.0 rather than 86 (because <code>/</code> always gives a float).</li></ul></div>`;
+let pState = {bank:[], prog:[]};
+function pSetup(){
+  const lv = document.body.dataset.level;
+  let pool = PARSONS.lines.map(l=>({...l}));
+  if(lv==='stretch') pool = pool.concat(PARSONS.distract.map(l=>({...l})));
+  pool.forEach(l => l.cur = (lv==='support') ? l.ind : 0);
+  for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+  if(pool.map(p=>p.id).join('') === PARSONS.order.join('')) pool.reverse();
+  pState = {bank:pool, prog:[]};
+  $('#pFb').innerHTML=''; $('#pOut').hidden=true; pDraw();
+}
+function pDraw(){
+  const lv = document.body.dataset.level;
+  const bank = $('#pBank'), prog = $('#pProg');
+  bank.innerHTML = '<h3>Line bank</h3>' + (pState.bank.length? '' : '<p class="small muted">All lines used.</p>');
+  pState.bank.forEach((l,i)=>{ const b=document.createElement('button'); b.className='pline bank'; b.innerHTML=`<span class="txt">${hl(' '.repeat(lv==='support'?l.ind*4:0)+l.t)}</span>`; b.setAttribute('aria-label','Add line: '+l.t); b.onclick=()=>{ pState.prog.push(pState.bank.splice(i,1)[0]); $('#pFb').innerHTML=''; pDraw(); }; bank.appendChild(b); });
+  prog.innerHTML = '<h3>Your program</h3>' + (pState.prog.length? '' : '<p class="small muted">Tap lines in the bank to add them here.</p>');
+  pState.prog.forEach((l,i)=>{
+    const d=document.createElement('div'); d.className='pline'; d.dataset.i=i;
+    d.innerHTML=`<span class="txt">${hl(' '.repeat(l.cur*4)+l.t)}</span>
+      ${lv!=='support'?`<button data-a="out" aria-label="Remove indent">⇤</button><button data-a="in" aria-label="Indent">⇥</button>`:''}
+      <button data-a="up" aria-label="Move up">↑</button><button data-a="down" aria-label="Move down">↓</button><button data-a="del" aria-label="Back to bank">✕</button>`;
+    d.onclick = e => { const a=e.target.dataset.a; if(!a) return;
+      if(a==='in') l.cur=Math.min(2,l.cur+1); if(a==='out') l.cur=Math.max(0,l.cur-1);
+      if(a==='up'&&i>0) [pState.prog[i-1],pState.prog[i]]=[pState.prog[i],pState.prog[i-1]];
+      if(a==='down'&&i<pState.prog.length-1) [pState.prog[i+1],pState.prog[i]]=[pState.prog[i],pState.prog[i+1]];
+      if(a==='del') pState.bank.push(pState.prog.splice(i,1)[0]);
+      $('#pFb').innerHTML=''; pDraw(); };
+    prog.appendChild(d);
+  });
+}
+function pSource(){ return pState.prog.map(l=>' '.repeat(l.cur*4)+l.t).join('\n'); }
+$('#pCheck').onclick = () => {
+  const els = $$('#pProg .pline'); let right=0, indBad=0;
+  pState.prog.forEach((l,i)=>{ const want = PARSONS.order[i]; const el=els[i]; el.classList.remove('ok','bad','indent-bad');
+    if(l.id===want && l.cur===l.ind){ el.classList.add('ok'); right++; }
+    else if(l.id===want){ el.classList.add('indent-bad'); indBad++; }
+    else el.classList.add('bad'); });
+  const n = PARSONS.order.length, fb=$('#pFb');
+  if(right===n && pState.prog.length===n) fb.innerHTML='<div class="feedback good">Correct! Now run it to see the output.</div>';
+  else if(pState.prog.length<n) fb.innerHTML=`<div class="feedback mid">${right} of ${n} lines are correct so far. Keep adding lines.</div>`;
+  else fb.innerHTML=`<div class="feedback ${right>=3?'mid':'bad'}">${right} of ${n} lines are in the right place${indBad?` · ${indBad} ${indBad>1?'lines need':'line needs'} the indentation fixing (amber)`:''}${pState.prog.length>n?' · there are extra lines in your program':''}.</div>`;
+};
+$('#pRun').onclick = async () => { const o=$('#pOut'); o.hidden=false; o.textContent='Running…'; showResult(o, await runPython(pSource())); };
+$('#pShuffle').onclick = pSetup;
+
+/* 6. fill the gaps */
+const GAPS = [
+  {a:'def', hint:'The keyword that defines a function.'},
+  {a:'quantity', hint:'Look at line 2. Which variable is used but not yet a parameter?'},
+  {a:'*', hint:'Price and quantity need to be multiplied.'},
+  {a:'return', hint:'The keyword that sends a value back.'},
+  {a:'total_price', hint:'Call the function using its name.'},
+];
+const G = i => `<input data-g="${i}" aria-label="Gap ${i+1}" autocomplete="off" autocapitalize="off" spellcheck="false">`;
+$('#st-gaps').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">Fill the gaps</div><h2 id="h-gaps">Complete the shop receipt function</h2></div>
+  <p class="lead">The function works out the cost of buying several of the same item. Fill in the missing parts.</p></div>
+  <div class="cols">
+    <div class="panel">
+      <div class="gapcode"><span class="tk-k">${G(0)}</span> <span class="tk-f">total_price</span>(price, ${G(1)}):
+    cost = price ${G(2)} quantity
+    ${G(3)} cost
+
+bill = ${G(4)}(<span class="tk-n">4500</span>, <span class="tk-n">3</span>)
+<span class="tk-f">print</span>(<span class="tk-s">"Total:"</span>, bill, <span class="tk-s">"won"</span>)</div>
+      <div data-show="support"><p class="small" style="margin-bottom:6px"><span class="tier support">Support</span>Tap a gap, then tap a word. Some words are not needed.</p>
+        <div class="bank-words" id="wordBank"></div></div>
+      <div class="bar"><button class="btn mark" id="gCheck">✓ Check answers</button><button class="btn primary" id="gRun">▶ Run it</button><button class="btn" id="gHint" data-show="core">Show a hint</button><button class="btn" id="gClear">Clear</button></div>
+      <div id="gFb" aria-live="polite"></div>
+      <pre class="out" id="gOut" hidden></pre>
+    </div>
+    <div class="panel">
+      <h3>Think about it</h3>
+      <ul class="qs">
+        <li><details class="q"><summary>Predict: what will the program print?</summary><div class="ans"><code>Total: 13500 won</code> (4500 × 3)</div></details></li>
+        <li data-show="core stretch"><details class="q"><summary>Which words are the parameters, and which values are the arguments?</summary><div class="ans">The parameters are <code>price</code> and <code>quantity</code>. The arguments are <code>4500</code> and <code>3</code>.</div></details></li>
+        <li data-show="stretch"><details class="q"><summary><span class="tier stretch">Stretch</span>Add a second call that prints the total for 2 drinks at 1200 won, without changing the function.</summary><div class="ans"><code>print("Drinks:", total_price(1200, 2), "won")</code> prints <code>Drinks: 2400 won</code>. The function is reused, which is why we write functions.</div></details></li>
+        <li data-show="stretch"><details class="q"><summary><span class="tier stretch">Stretch</span>What would happen if gap 4 was <code>print</code> instead of <code>return</code>?</summary><div class="ans">The function would print 13500 itself, but return <code>None</code>. So the last line would print <code>Total: None won</code>.</div></details></li>
+      </ul>
+    </div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Answers: <code>def</code>, <code>quantity</code>, <code>*</code>, <code>return</code>, <code>total_price</code>.</li>
+    <li>At the front: pick a student to choose a gap and give its word, then ask the class "Agree or disagree? Why?".</li>
+    <li>Support students get a word bank that includes distractors (<code>print</code>, <code>+</code>, <code>price</code>). Ask them to explain why each distractor is wrong.</li></ul></div>`;
+const WORDS = ['def','quantity','*','return','total_price','print','+','price'];
+let gSel = null;
+$('#wordBank').innerHTML = WORDS.slice().sort().map(w=>`<button class="word" data-w="${esc(w)}">${esc(w)}</button>`).join('');
+$$('.gapcode input').forEach(inp => { inp.addEventListener('focus', ()=>{ $$('.gapcode input').forEach(x=>x.classList.remove('sel')); inp.classList.add('sel'); gSel=inp; }); inp.addEventListener('input', ()=>inp.classList.remove('ok','bad')); });
+$$('#wordBank .word').forEach(b => b.onclick = () => { const t = gSel || $$('.gapcode input').find(x=>!x.value); if(!t) return; t.value=b.dataset.w; t.classList.remove('ok','bad'); const nx=$$('.gapcode input').find(x=>!x.value); if(nx){ nx.focus(); } });
+$('#gCheck').onclick = () => { let r=0; $$('.gapcode input').forEach((inp,i)=>{ const ok = inp.value.trim()===GAPS[i].a; inp.classList.toggle('ok',ok); inp.classList.toggle('bad',!ok); if(ok) r++; });
+  $('#gFb').innerHTML = `<div class="feedback ${r===5?'good':r>=3?'mid':'bad'}">${r} of 5 correct${r===5?'. Now run it!':'. Red gaps need another look.'}</div>`; };
+$('#gHint').onclick = () => { const i = $$('.gapcode input').findIndex((inp,k)=>inp.value.trim()!==GAPS[k].a); $('#gFb').innerHTML = i<0 ? '<div class="feedback good">All the gaps are correct.</div>' : `<div class="feedback mid">Gap ${i+1}: ${GAPS[i].hint}</div>`; };
+$('#gClear').onclick = () => { $$('.gapcode input').forEach(x=>{x.value='';x.classList.remove('ok','bad');}); $('#gFb').innerHTML=''; $('#gOut').hidden=true; };
+$('#gRun').onclick = async () => { const v=$$('.gapcode input').map(x=>x.value.trim()||'___');
+  const src = `${v[0]} total_price(price, ${v[1]}):\n    cost = price ${v[2]} quantity\n    ${v[3]} cost\n\nbill = ${v[4]}(4500, 3)\nprint("Total:", bill, "won")`;
+  const o=$('#gOut'); o.hidden=false; o.textContent='Running…'; showResult(o, await runPython(src)); };
+
+/* 7. modify */
+const MOD_START = `def area(length, width):
+    result = length * width
+    return result
+
+print("Area:", area(5, 2))`;
+const MOD_TESTS = {
+  support: [{label:'perimeter(5, 2) returns 14', expr:'perimeter(5, 2) == 14'},{label:'perimeter(3, 3) returns 12', expr:'perimeter(3, 3) == 12'}],
+  core: [{label:'volume(2, 3, 4) returns 24', expr:'volume(2, 3, 4) == 24'},{label:'volume(10, 1, 1) returns 10', expr:'volume(10, 1, 1) == 10'}],
+  stretch: [{label:'area_and_perimeter(5, 2) returns (10, 14)', expr:'area_and_perimeter(5, 2) == (10, 14)'},{label:'rectangle(5) works with width defaulting to 1', expr:'rectangle(5) == 5'},{label:'rectangle(5, 3) returns 15', expr:'rectangle(5, 3) == 15'}],
+};
+$('#st-modify').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">PRIMM · Modify</div><h2 id="h-modify">Change the code to do something new</h2></div>
+  <p class="lead">Start from the working <code>area</code> function. Make your change, run it, then press <b>Check my code</b>.</p></div>
+  <div class="cols">
+    <div class="panel">
+      <div data-show="support"><h3><span class="tier support">Support</span>Perimeter</h3>
+        <ol><li>Rename the function to <code>perimeter</code>.</li><li>Change line 2 to <code>result = 2 * length + 2 * width</code>.</li><li>Change the print to call <code>perimeter(5, 2)</code>. The output should be 14.</li></ol></div>
+      <div data-show="core"><h3><span class="tier core">Core</span>Volume of a box</h3>
+        <p>Change the function to <code>volume(length, width, height)</code> so it returns the volume of a box.</p>
+        <p class="small muted">Test: <code>volume(2, 3, 4)</code> should give 24. You need to add a parameter <i>and</i> an argument.</p></div>
+      <div data-show="stretch"><h3><span class="tier stretch">Stretch</span>Two answers and a default</h3>
+        <ol><li>Write <code>area_and_perimeter(length, width)</code> that returns <b>both</b> values: <code>return a, p</code>.</li>
+        <li>Write <code>rectangle(length, width=1)</code>. The <code>=1</code> is a default value, so <code>rectangle(5)</code> returns 5.</li>
+        <li>Print a sentence using both results.</li></ol></div>
+    </div>
+    <div class="panel"><div id="modEd"></div></div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>All three tasks change the same starting code, so the whole class can compare solutions at the end.</li>
+    <li>Change the level at the top to show each group's task and tests. <b>Check my code</b> uses the tests for the level currently selected.</li>
+    <li>Plenary idea: show one Support, one Core and one Stretch solution side by side. "What stayed the same? What changed?"</li></ul></div>`;
+makeEditor($('#modEd'), MOD_START, {id:'modCode', tests:()=>MOD_TESTS[document.body.dataset.level]});
+
+/* 8. make */
+const MAKE_START = {
+  support:`def item_cost(price, quantity):
+    # multiply price by quantity and return the answer
+
+
+def add_service(total):
+    # add 10% to the total and return the new total
+
+
+snacks = item_cost(1500, 4)
+print("Snacks:", snacks, "won")
+print("With service:", add_service(snacks), "won")`,
+  core:`def item_cost(price, quantity):
+
+
+def add_service(total):
+
+
+# Call your functions here for 4 snacks at 1500 won each
+`,
+  stretch:`# Snack shop receipt
+# Write item_cost, add_service and apply_discount
+# then print a neat receipt.
+`
+};
+const MAKE_TESTS = {
+  support:[{label:'item_cost(1500, 4) returns 6000', expr:'item_cost(1500, 4) == 6000'},{label:'add_service(6000) returns 6600', expr:'abs(add_service(6000) - 6600) < 0.01'}],
+  core:[{label:'item_cost(1500, 4) returns 6000', expr:'item_cost(1500, 4) == 6000'},{label:'item_cost(800, 0) returns 0', expr:'item_cost(800, 0) == 0'},{label:'add_service(6000) returns 6600', expr:'abs(add_service(6000) - 6600) < 0.01'}],
+  stretch:[{label:'item_cost(1500, 4) returns 6000', expr:'item_cost(1500, 4) == 6000'},{label:'add_service(6000) returns 6600', expr:'abs(add_service(6000) - 6600) < 0.01'},{label:'apply_discount(10000, 20) returns 8000', expr:'abs(apply_discount(10000, 20) - 8000) < 0.01'},{label:'apply_discount(10000) returns 10000 (default 0%)', expr:'abs(apply_discount(10000) - 10000) < 0.01'}],
+};
+$('#st-make').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">PRIMM · Make</div><h2 id="h-make">Make: the snack shop receipt</h2></div>
+  <p class="lead">The school shop needs a program to work out what customers pay. Write the functions, then press <b>Check my code</b>.</p></div>
+  <div class="cols">
+    <div class="panel">
+      <h3>The brief</h3>
+      <ul>
+        <li><code>item_cost(price, quantity)</code> returns price × quantity.</li>
+        <li><code>add_service(total)</code> returns the total plus 10%.</li>
+        <li data-show="stretch"><code>apply_discount(total, percent=0)</code> returns the total minus <i>percent</i>%. It should work even without a percent.</li>
+      </ul>
+      <p data-show="support"><span class="tier support">Support</span>The skeleton is done for you. Write one <code>return</code> line in each function. Hint: 10% of the total is <code>total * 10 / 100</code>.</p>
+      <p data-show="core"><span class="tier core">Core</span>You have the function names. Write the bodies, then call them and print the results.</p>
+      <p data-show="stretch"><span class="tier stretch">Stretch</span>Blank page. Also print a receipt where every line is made by calling a function. Extension: <code>round()</code> the final price to the nearest 10 won.</p>
+      <p class="small muted">Changing the level loads that level's starting code. Save your work first if you want to keep it.</p>
+    </div>
+    <div class="panel"><div id="makeEd"></div></div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Suggested time is 12–15 minutes. Use the timer.</li>
+    <li>Circulate and check in with the Support group within the first 3 minutes.</li>
+    <li>Model solution: <code>return price * quantity</code> · <code>return total + total * 10 / 100</code> · <code>return total - total * percent / 100</code>.</li>
+    <li>If a student finishes early, ask them to "explain your code to a partner using the words <i>parameter</i>, <i>argument</i> and <i>return</i>".</li></ul></div>`;
+const makeEd = makeEditor($('#makeEd'), MAKE_START.core, {id:'makeCode', tests:()=>MAKE_TESTS[document.body.dataset.level]});
+
+/* 9. exit */
+$('#st-exit').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">Exit ticket</div><h2 id="h-exit">Check your understanding</h2></div>
+  <p class="lead">Answer on mini whiteboards, then vote. Tap to count the hands.</p></div>
+  <div class="panel"><p class="big-q">1. Which keyword sends a value back from a function?</p><div id="ex1"></div></div>
+  <div class="panel"><p class="big-q">2. In <code>def square(n):</code> the <code>n</code> is…</p><div id="ex2"></div></div>
+  <div class="panel"><p class="big-q">3. What does this program print?</p>${codeBlock(`def double(x):
+    return x * 2
+
+print(double(double(3)))`)}<div id="ex3"></div></div>
+  <div class="panel"><h3>How confident are you now? Show fist to five ✊ → 🖐, or vote on your device</h3><p class="muted">Compare this with the start of the lesson. What helped you most today?</p><div id="exConf"></div></div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Q3 is the hardest: the inner <code>double(3)</code> runs first and returns 6, then <code>double(6)</code> returns 12.</li>
+    <li>Note which students answer Q2 wrongly (parameter vs argument), and start next lesson with a retrieval question on it.</li></ul></div>`;
+voteWidget($('#ex1'), 'ex1', 'Which keyword sends a value back from a function?', ['print','return','def','output'], 1);
+voteWidget($('#ex2'), 'ex2', 'In  def square(n):  the n is…', ['an argument','a parameter','a return value','a function name'], 1);
+voteWidget($('#ex3'), 'ex3', 'What does this program print?', ['6','12','9','An error'], 1, `def double(x):
+    return x * 2
+
+print(double(double(3)))`);
+voteWidget($('#exConf'), 'conf', 'How confident do you feel about functions now?', ['1 · Not yet','2','3','4','5 · Very confident'], -1);
+
+/* ---------- navigation ---------- */
+let cur = 0;
+$('#steps').innerHTML = STAGES.map((s,i)=>`<button class="step${s.primm?' primm':''}" data-i="${i}"><b>${i+1}</b>${s.label}</button>`).join('');
+function go(i){
+  cur = Math.max(0, Math.min(STAGES.length-1, i));
+  $$('.stage').forEach((s,k)=>s.hidden = k!==cur);
+  $$('.step').forEach((b,k)=>{ if(k===cur) b.setAttribute('aria-current','step'); else b.removeAttribute('aria-current'); });
+  $('#prev').disabled = cur===0; $('#next').disabled = cur===STAGES.length-1;
+  $('#pos').textContent = `Stage ${cur+1} of ${STAGES.length}`;
+  $('#dLabel').innerHTML = `${esc(STAGES[cur].label)} <span>${cur+1}/${STAGES.length}</span>`; $('#dPrev').disabled = cur===0; $('#dNext').disabled = cur===STAGES.length-1;
+  window.scrollTo({top:0, behavior:'auto'});
+}
+$$('.step').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+$('#prev').onclick=()=>go(cur-1); $('#next').onclick=()=>go(cur+1);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.body.classList.contains('present')){ setPresent(false); return; } if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return; if(e.key==='ArrowRight'||e.key==='PageDown') go(cur+1); if(e.key==='ArrowLeft'||e.key==='PageUp') go(cur-1); if(e.key==='p'||e.key==='P') setPresent(!document.body.classList.contains('present')); });
+
+/* ---------- level ---------- */
+function setLevel(lv){
+  document.body.dataset.level = lv;
+  $$('.seg button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.lv===lv));
+  pSetup(); aSetup(); makeEd.set(MAKE_START[lv]);
+}
+$$('.seg button').forEach(b=>b.onclick=()=>setLevel(b.dataset.lv));
+
+/* ---------- tools ---------- */
+let tLeft=180, tRun=null;
+const tDraw=()=>{ const m=Math.floor(tLeft/60), s=tLeft%60; const txt=`${m}:${String(s).padStart(2,'0')}`; ['#tOut','#dTime'].forEach(id=>{ const o=$(id); o.textContent=txt; o.classList.toggle('done', tLeft===0); }); };
+$$('.timer [data-min]').forEach(b=>b.onclick=()=>{ clearInterval(tRun); tRun=null; tLeft=+b.dataset.min*60; $('#tGo').textContent='▶'; tDraw(); });
+$('#tGo').onclick=()=>{ if(tRun){ clearInterval(tRun); tRun=null; $('#tGo').textContent='▶'; return; } if(tLeft===0) return; $('#tGo').textContent='❚❚'; tRun=setInterval(()=>{ tLeft--; tDraw(); if(tLeft<=0){ clearInterval(tRun); tRun=null; $('#tGo').textContent='▶'; } },1000); };
+function toggleDrawer(id, btn){ const d=$('#'+id); d.hidden=!d.hidden; btn.setAttribute('aria-pressed', !d.hidden); ['gloss','picker','livePanel'].filter(x=>x!==id).forEach(x=>{ $('#'+x).hidden=true; }); $('#glossBtn').setAttribute('aria-pressed', !$('#gloss').hidden); $('#pickBtn').setAttribute('aria-pressed', !$('#picker').hidden); }
+$('#glossBtn').onclick=()=>toggleDrawer('gloss',$('#glossBtn'));
+$('#pickBtn').onclick=()=>toggleDrawer('picker',$('#pickBtn'));
+$$('[data-close]').forEach(b=>b.onclick=()=>{ $('#'+b.dataset.close).hidden=true; $('#glossBtn').setAttribute('aria-pressed',false); $('#pickBtn').setAttribute('aria-pressed',false); });
+let used=[];
+$('#pickGo').onclick=()=>{ const n=Math.max(2,Math.min(40,+$('#classSize').value||24)); let pool=[]; for(let i=1;i<=n;i++) if(!used.includes(i)) pool.push(i); if(!pool.length){ used=[]; pool=Array.from({length:n},(_,i)=>i+1); }
+  const pick=pool[Math.floor(Math.random()*pool.length)]; used.push(pick);
+  let k=0; const el=$('#pickNum'); const spin=setInterval(()=>{ el.textContent=1+Math.floor(Math.random()*n); if(++k>10){ clearInterval(spin); el.textContent=pick; } }, 45); };
+$('#classSize').onchange=()=>{ used=[]; };
+$('#notesBtn').onclick=()=>{ const on=document.body.classList.toggle('show-notes'); $('#notesBtn').setAttribute('aria-pressed',on); };
+let fs=17; $('#aPlus').onclick=()=>{ fs=Math.min(26,fs+1); document.documentElement.style.setProperty('--fs',fs+'px'); }; $('#aMinus').onclick=()=>{ fs=Math.max(13,fs-1); document.documentElement.style.setProperty('--fs',fs+'px'); };
+
+/* ---------- live voting (Firebase) ---------- */
+const Live = (() => {
+  const st = { on:false, code:'', db:null, uid:'', active:'', open:false, joined:0, refs:[] };
+  const configured = () => !!(window.firebase && window.FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !/PASTE/i.test(FIREBASE_CONFIG.apiKey) && FIREBASE_CONFIG.databaseURL);
+  const body = () => $('#liveBody');
+  const joinURL = () => new URL('vote.html', location.href).href.split('?')[0] + '?room=' + st.code;
+  function panel(msg){
+    if(!configured()){
+      body().innerHTML = `<p class="lmsg">Live voting isn't set up on this copy yet. Follow <b>README.md</b> to create a free Firebase project and paste its settings into <code>firebase-config.js</code>. Until then, you can still count hands by tapping the options.</p>`; return; }
+    if(!st.on){
+      body().innerHTML = `${msg?`<p class="lmsg">${msg}</p>`:''}<p>Start a session so students can vote on their own devices. They'll join with a room code or QR code, and no names are collected.</p><div class="bar" style="margin-top:10px"><button class="btn primary" id="liveStart">Start a live session</button></div>`;
+      $('#liveStart').onclick = start; return; }
+    body().innerHTML = `<p class="small muted" style="text-align:center">Students go to the link or scan the code</p>
+      <div class="roomcode">${st.code}</div><div class="qr" id="qr"></div><div class="joinurl">${esc(joinURL())}</div>
+      <p style="text-align:center;margin-top:8px"><b id="joinedN">${st.joined}</b> devices joined</p>
+      <p class="small muted" style="margin-top:8px">On each vote question, press <b>Open voting on devices</b>. Only one question is open at a time. Hand counts you tap are added to the device votes.</p>
+      <div class="bar" style="margin-top:10px;justify-content:center"><button class="btn" id="liveEnd">End session</button></div>`;
+    try{ new QRCode($('#qr'), {text: joinURL(), width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M}); }catch(e){ $('#qr').remove(); }
+    $('#liveEnd').onclick = end;
+  }
+  const makeCode = () => { const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let c=''; for(let i=0;i<5;i++) c+=A[Math.floor(Math.random()*A.length)]; return c; };
+  async function start(){
+    body().innerHTML = '<p>Connecting…</p>';
+    try{
+      if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+      const cred = await firebase.auth().signInAnonymously();
+      st.uid = cred.user.uid; st.db = firebase.database();
+      let code='';
+      for(let i=0;i<6;i++){ code = makeCode(); const snap = await st.db.ref('rooms/'+code).get(); if(!snap.exists()) break; }
+      await st.db.ref('rooms/'+code).set({ owner: st.uid, created: Date.now(), active:'', open:false, reveal:-1 });
+      st.code = code; st.on = true; document.body.classList.add('live'); $('#liveBtn').setAttribute('aria-pressed', true);
+      const vref = st.db.ref(`rooms/${code}/votes`);
+      const vcb = vref.on('value', snap => { const v = snap.val() || {}; Object.keys(WIDGETS).forEach(q => { const arr=[0,0,0,0,0,0]; Object.values(v[q]||{}).forEach(x => { if(typeof x==='number' && arr[x]!==undefined) arr[x]++; }); WIDGETS[q].setLive(arr); }); });
+      const jref = st.db.ref(`rooms/${code}/joined`);
+      const jcb = jref.on('value', snap => { st.joined = snap.exists() ? Object.keys(snap.val()).length : 0; const n=$('#joinedN'); if(n) n.textContent = st.joined; dockLabel(); });
+      st.refs = [[vref,vcb],[jref,jcb]];
+      panel(); dockLabel(); Object.values(WIDGETS).forEach(w=>w.redraw());
+    }catch(e){ console.error(e); st.on=false; panel(`Couldn't start a session: ${esc(e.message||String(e))}. Check the Firebase setup steps in README.md.`); }
+  }
+  async function end(){
+    st.refs.forEach(([r,cb])=>r.off('value',cb)); st.refs=[];
+    try{ await st.db.ref('rooms/'+st.code).remove(); }catch(e){}
+    st.on=false; st.code=''; st.active=''; st.open=false; document.body.classList.remove('live'); $('#liveBtn').setAttribute('aria-pressed', false);
+    Object.values(WIDGETS).forEach(w=>{ w.setLive([]); w.setState('',false); }); panel(); dockLabel();
+  }
+  function states(){ Object.keys(WIDGETS).forEach(q=>WIDGETS[q].setState(st.active, st.open)); }
+  function dockLabel(){ $('#dLive').textContent = st.on ? `Room ${st.code} · ${st.joined}` : ''; }
+  const upd = obj => st.on ? st.db.ref('rooms/'+st.code).update(obj).catch(e=>console.error(e)) : Promise.resolve();
+  return {
+    panel, get on(){ return st.on; },
+    open(id, q){ if(!st.on){ togglePanel(true); return; } st.active=id; st.open=true; states(); upd({active:id, open:true, reveal:-1, question:q}); },
+    close(){ if(!st.on) return; st.open=false; states(); upd({open:false}); },
+    reveal(id, idx){ if(!st.on || st.active!==id) return; st.open=false; states(); upd({open:false, reveal:idx}); },
+    clearVotes(id){ if(!st.on) return; st.db.ref(`rooms/${st.code}/votes/${id}`).remove().catch(()=>{}); if(st.active===id){ upd({reveal:-1}); } }
+  };
+})();
+function togglePanel(force){ const d=$('#livePanel'); const show = force===undefined ? d.hidden : force; if(show){ ['gloss','picker'].forEach(x=>$('#'+x).hidden=true); $('#glossBtn').setAttribute('aria-pressed',false); $('#pickBtn').setAttribute('aria-pressed',false); Live.panel(); } d.hidden = !show; }
+$('#liveBtn').onclick = () => togglePanel();
+$('#dLive').onclick = () => togglePanel();
+window.addEventListener('beforeunload', e => { if(Live.on){ e.preventDefault(); e.returnValue=''; } });
+
+/* ---------- present mode ---------- */
+function setPresent(on){
+  document.body.classList.toggle('present', on);
+  $('#presentBtn').setAttribute('aria-pressed', on);
+  const fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+  if(on && !fsEl){ const r=document.documentElement; const f=r.requestFullscreen||r.webkitRequestFullscreen; if(f){ try{ const pr=f.call(r); if(pr&&pr.catch) pr.catch(()=>{}); }catch(e){} } }
+  if(!on && fsEl){ const x=document.exitFullscreen||document.webkitExitFullscreen; if(x){ try{ const pr=x.call(document); if(pr&&pr.catch) pr.catch(()=>{}); }catch(e){} } }
+  if(on){ wakeDock(); } window.scrollTo({top:0});
+}
+let dockT; function wakeDock(){ const d=$('#dock'); d.classList.add('wake'); clearTimeout(dockT); dockT=setTimeout(()=>d.classList.remove('wake'), 2500); }
+document.addEventListener('fullscreenchange', ()=>{ if(!document.fullscreenElement && document.body.classList.contains('present')) setPresent(false); });
+document.addEventListener('mousemove', e=>{ if(document.body.classList.contains('present') && e.clientY > window.innerHeight-140) wakeDock(); });
+$('#presentBtn').onclick=()=>setPresent(true);
+$('#dExit').onclick=()=>setPresent(false);
+$('#dPrev').onclick=()=>go(cur-1); $('#dNext').onclick=()=>go(cur+1);
+$('#dGo').onclick=()=>$('#tGo').click();
+new MutationObserver(()=>{ $('#dGo').textContent=$('#tGo').textContent; }).observe($('#tGo'),{childList:true,characterData:true,subtree:true});
+$('#dGloss').onclick=()=>$('#glossBtn').click();
+$('#dPick').onclick=()=>$('#pickBtn').click();
+$('#dA').onclick=()=>$('#aPlus').click();
+
+setLevel('core'); go(0);
+</script>
+
+</body>
+</html>
