@@ -62,11 +62,20 @@ pre{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);bord
 .result.good{background:var(--good-soft);color:var(--good)}
 .result.bad{background:var(--bad-soft);color:var(--bad)}
 .small{font-size:.85rem;color:var(--muted);text-align:center}
+.hdr{display:flex;gap:6px;align-items:center}
+.score{font-weight:700;background:var(--good-soft);color:var(--good);border-radius:999px;padding:3px 12px;font-size:.9rem}
+.count{display:flex;justify-content:center;align-items:baseline;gap:8px;font-weight:700}
+.count b{font-family:var(--display);font-size:2rem;font-variant-numeric:tabular-nums;color:var(--accent)}
+.opt{position:relative;overflow:hidden}
+.opt .fill{position:absolute;inset:0 auto 0 0;background:var(--accent);opacity:.12;transition:width .4s;pointer-events:none}
+.opt:has(.n){padding-right:44px}
+.opt .n{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-family:var(--mono);font-weight:600;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){.opt .fill{transition:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header><b>Class vote</b><span class="room" id="roomTag" hidden></span></header>
+  <header><b>Class vote</b><span class="hdr"><span class="score" id="scoreTag" hidden></span><span class="room" id="roomTag" hidden></span></span></header>
 
   <section class="card" id="join">
     <h1>Join your class</h1>
@@ -90,6 +99,7 @@ pre{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);bord
   <section class="card" id="question" hidden>
     <h1 id="qTitle"></h1>
     <pre id="qCode" hidden></pre>
+    <div class="count" id="qCount" aria-live="polite"></div>
     <div class="opts" id="qOpts"></div>
     <p class="status" id="qStatus" aria-live="polite"></p>
     <div id="qResult" aria-live="polite"></div>
@@ -136,23 +146,38 @@ async function join(){
 $('#joinBtn').onclick = join;
 $('#code').addEventListener('keydown', e => { if(e.key === 'Enter') join(); });
 
+function score(){
+  const ans = room && room.answers ? room.answers : {}; const ids = Object.keys(ans);
+  if(!ids.length){ $('#scoreTag').hidden = true; return; }
+  let right = 0, tried = 0;
+  ids.forEach(q => { const v = room.votes && room.votes[q] ? room.votes[q][uid] : undefined; if(v !== undefined){ tried++; if(v === ans[q]) right++; } });
+  $('#scoreTag').textContent = `✓ ${right} / ${ids.length}`; $('#scoreTag').hidden = false;
+  $('#scoreTag').title = `You answered ${tried} of ${ids.length} marked questions and got ${right} right.`;
+}
 function render(){
-  if(!room){ show('ended'); if(off) off(); return; }
+  if(!room){ show('ended'); $('#scoreTag').hidden = true; if(off) off(); return; }
+  score();
   const q = room.question, active = room.active;
-  if(!q || !active || q.id !== active){ show('waiting'); $('#waitTitle').textContent = 'Waiting for your teacher'; $('#waitMine').textContent=''; return; }
-  const saved = room.votes && room.votes[active] ? room.votes[active][uid] : undefined;
+  if(!q || !active || q.id !== active){ show('waiting'); $('#waitTitle').textContent = 'Waiting for your teacher'; $('#waitKo').textContent = '선생님이 질문을 열 때까지 기다려 주세요'; $('#waitMine').textContent=''; return; }
+  const votes = room.votes && room.votes[active] ? room.votes[active] : {};
+  const saved = votes[uid];
   const mine = pending[active] !== undefined ? pending[active] : saved;
   const revealed = typeof room.reveal === 'number' && room.reveal >= 0;
   if(!room.open && mine === undefined && !revealed){ show('waiting'); $('#waitTitle').textContent = 'Voting is closed'; $('#waitKo').textContent = '다음 질문을 기다려 주세요'; $('#waitMine').textContent=''; return; }
   show('question');
   $('#qTitle').textContent = q.title;
   $('#qCode').hidden = !q.code; $('#qCode').textContent = q.code || '';
-  const L = 'ABCDEF';
-  $('#qOpts').innerHTML = (q.options||[]).map((o,i) => {
+  const L = 'ABCDEF', opts = q.options || [];
+  const counts = opts.map(() => 0); Object.values(votes).forEach(v => { if(typeof v === 'number' && counts[v] !== undefined) counts[v]++; });
+  const total = counts.reduce((a,b)=>a+b,0);
+  const bars = !!room.showLive || revealed || q.kind === 'checkin';
+  $('#qCount').innerHTML = `<b>${total}</b> <span>vote${total===1?'':'s'} in${room.open ? '' : ' · voting closed'}</span>`;
+  $('#qOpts').innerHTML = opts.map((o,i) => {
     let cls = 'opt';
     if(revealed && i === room.reveal) cls += ' right';
     else if(revealed && i === mine) cls += ' wrongpick';
-    return `<button class="${cls}" data-i="${i}" aria-pressed="${i===mine}" ${room.open?'':'disabled'}><span class="l">${L[i]}</span><span>${esc(o)}</span></button>`;
+    const w = bars && total ? Math.round(counts[i]/total*100) : 0;
+    return `<button class="${cls}" data-i="${i}" aria-pressed="${i===mine}" ${room.open?'':'disabled'}>${bars?`<span class="fill" style="width:${w}%"></span><span class="n">${counts[i]}</span>`:''}<span class="l">${L[i]}</span><span>${esc(o)}</span></button>`;
   }).join('');
   document.querySelectorAll('#qOpts .opt').forEach(b => b.onclick = () => vote(active, +b.dataset.i));
   $('#qStatus').textContent = room.open ? (mine === undefined ? 'Tap your answer. You can change it until voting closes.' : `Vote sent: ${L[mine]}. You can still change it.`) : (mine !== undefined ? `Voting closed. You voted ${L[mine]}.` : 'Voting closed.');

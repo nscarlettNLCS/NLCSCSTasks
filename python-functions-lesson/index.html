@@ -22,6 +22,7 @@
   --sup:#B2362F; --core:#9A6A00; --str:#237A4B;
   --code-bg:#12212A; --code-ink:#E4EEEC; --code-muted:#7E949A; --code-line:#1C2F3A; --code-hl:#294A3A;
   --k:#7FD1D8; --s:#F4C542; --n:#F29E8E; --c:#7E949A; --f:#B9E38D;
+  --glob:#2B63A6; --glob-soft:#DCE8F6; --loc:#B8581F; --loc-soft:#FBE6D8;
   --fs:17px;
   --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
   --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
@@ -34,6 +35,7 @@
     --mark-soft:#3A3217; --good:#6FD39A; --good-soft:#173627; --warn:#F0C45A; --warn-soft:#3A3014; --bad:#F2877F; --bad-soft:#3E1D1B;
     --sup:#F2877F; --core:#F0C45A; --str:#6FD39A;
     --code-bg:#0A141A; --code-line:#132530;
+    --glob:#7FB2F0; --glob-soft:#172A40; --loc:#F2A06A; --loc-soft:#3A2416;
   }
 }
 :root[data-theme="dark"]{
@@ -42,6 +44,7 @@
     --mark-soft:#3A3217; --good:#6FD39A; --good-soft:#173627; --warn:#F0C45A; --warn-soft:#3A3014; --bad:#F2877F; --bad-soft:#3E1D1B;
     --sup:#F2877F; --core:#F0C45A; --str:#6FD39A;
     --code-bg:#0A141A; --code-line:#132530;
+    --glob:#7FB2F0; --glob-soft:#172A40; --loc:#F2A06A; --loc-soft:#3A2416;
 }
 html{font-size:var(--fs)}
 body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:1rem;line-height:1.5;padding-inline:16px;padding-block:0 32px}
@@ -113,7 +116,7 @@ body[data-level="support"] li[data-show~="support"],body[data-level="core"] li[d
 .code .ln{display:grid;grid-template-columns:3em 1fr;padding-right:16px;transition:background .15s}
 .code .ln i{font-style:normal;color:var(--code-muted);text-align:right;padding-right:14px;user-select:none}
 .code .ln span{white-space:pre}
-.code .ln.hl{background:var(--code-hl);box-shadow:inset 4px 0 0 var(--mark)}
+.code .ln.hl.hl{background:var(--code-hl);box-shadow:inset 5px 0 0 var(--mark)}
 .tk-k{color:var(--k);font-weight:600}.tk-s{color:var(--s)}.tk-n{color:var(--n)}.tk-c{color:var(--c);font-style:italic}.tk-f{color:var(--f)}
 .out{background:var(--code-bg);color:var(--code-ink);font-family:var(--mono);border-radius:10px;padding:12px 14px;min-height:3.2em;white-space:pre-wrap;font-size:.98rem;margin:0}
 .out .err{color:#FFB4A9}
@@ -238,6 +241,49 @@ body.show-notes .notes{display:block}
 .tests li.pass{background:var(--good-soft);color:var(--good)}
 .tests li.fail{background:var(--bad-soft);color:var(--bad)}
 .status{font-size:.8rem;color:var(--muted)}
+/* scope */
+.v-g{color:#8EC5FF;text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px}
+.v-l{color:#FFB27A;text-decoration:underline dotted;text-decoration-thickness:2px;text-underline-offset:4px}
+.v-e{text-decoration:underline wavy #FF8A80;text-underline-offset:4px}
+.code .ln.gs{box-shadow:inset 5px 0 0 #8EC5FF}
+.code .ln.ls{background:rgba(255,178,122,.10);box-shadow:inset 5px 0 0 #FFB27A}
+.noscope .v-g,.noscope .v-l,.noscope .v-e{color:inherit;text-decoration:none}
+.noscope .code .ln.gs,.noscope .code .ln.ls{background:none;box-shadow:none}
+.scopekey{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 12px;font-size:.85rem;font-weight:700}
+.chip.g{background:var(--glob-soft);color:var(--glob)}
+.chip.l{background:var(--loc-soft);color:var(--loc)}
+.chip.g::before{content:"";width:14px;border-bottom:3px solid var(--glob)}
+.chip.l::before{content:"";width:14px;border-bottom:3px dotted var(--loc)}
+.rules2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.rule{border-radius:12px;padding:12px 14px;border:2px solid}
+.rule.g{background:var(--glob-soft);border-color:var(--glob)}
+.rule.l{background:var(--loc-soft);border-color:var(--loc);border-style:dashed}
+.rule h3{margin-bottom:4px}
+.rule.g h3{color:var(--glob)} .rule.l h3{color:var(--loc)}
+.sortrow{display:grid;grid-template-columns:minmax(6em,auto) auto 1fr;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+@media (max-width:560px){.sortrow{grid-template-columns:1fr auto}.sortrow .why{grid-column:1/-1}}
+.sortrow code{font-size:1.05rem;font-weight:600}
+.sortrow .seg button{padding:5px 12px}
+.sortrow .seg button[aria-pressed="true"][data-s="g"]{background:var(--glob);color:var(--surface)}
+.sortrow .seg button[aria-pressed="true"][data-s="l"]{background:var(--loc);color:var(--surface)}
+.sortrow .why{font-size:.9rem}
+.sortrow.ok .why{color:var(--good)} .sortrow.bad .why{color:var(--bad)}
+table.vars.g th{background:var(--glob-soft);color:var(--glob)}
+table.vars.l th{background:var(--loc-soft);color:var(--loc)}
+.out-label.g{color:var(--glob)} .out-label.l{color:var(--loc)}
+/* hinge + results */
+.hinge{border-left:5px solid var(--mark)}
+.pct{font-weight:700;font-size:.9rem}
+.res-row{display:grid;gap:4px;padding:10px 0;border-bottom:1px solid var(--line)}
+.res-row .t{font-weight:700;font-size:.92rem}
+.res-row .m{font-size:.8rem;color:var(--muted)}
+.res-bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.res-bar i{display:block;height:100%}
+.res-bar .c{background:var(--good)} .res-bar .w{background:var(--bad);opacity:.55}
+.res-bar .ci0{background:var(--good)} .res-bar .ci1{background:var(--warn)} .res-bar .ci2{background:var(--bad)}
+.res-row.empty{opacity:.45}
+.res-sum{font-family:var(--display);font-size:1.4rem;font-weight:800}
 /* live voting */
 .live-btn[aria-pressed="true"]{background:var(--good);color:var(--surface);border-color:var(--good)}
 .livebar{display:none;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px dashed var(--line);padding-top:10px}
@@ -298,6 +344,7 @@ body.present .dock:hover, body.present .dock:focus-within, body.present .dock.wa
       <button class="tbtn" id="notesBtn" aria-pressed="false">Teacher notes</button>
       <button class="tbtn" id="aMinus" aria-label="Smaller text">A−</button>
       <button class="tbtn" id="aPlus" aria-label="Larger text">A+</button>
+      <button class="tbtn" id="resBtn" aria-pressed="false">Results</button>
       <button class="tbtn live-btn" id="liveBtn" aria-pressed="false">Live voting</button>
       <button class="tbtn present-btn" id="presentBtn" title="Present mode (P)">⛶ Present</button>
     </div>
@@ -314,11 +361,17 @@ body.present .dock:hover, body.present .dock:focus-within, body.present .dock.wa
     <div><dt>parameter</dt><span class="ko">매개변수</span><dd>The name in the brackets when you <b>define</b> the function. <code>length</code></dd></div>
     <div><dt>argument</dt><span class="ko">인수 (인자)</span><dd>The value you give when you <b>call</b> the function. <code>4</code></dd></div>
     <div><dt>return</dt><span class="ko">반환하다</span><dd>Send a value back to where the function was called.</dd></div>
+    <div><dt>global variable</dt><span class="ko">전역 변수</span><dd>A variable made in the main program, outside any function. It can be read anywhere.</dd></div>
+    <div><dt>scope</dt><span class="ko">범위 (스코프)</span><dd>The part of the program where a variable exists and can be used.</dd></div>
     <div><dt>local variable</dt><span class="ko">지역 변수</span><dd>A variable made inside a function. It only exists inside that function.</dd></div>
     <div><dt>indentation</dt><span class="ko">들여쓰기</span><dd>The 4 spaces that show which lines belong inside the function.</dd></div>
   </dl>
 </aside>
 
+<aside class="drawer" id="resPanel" hidden aria-label="Lesson results">
+  <div class="bar" style="justify-content:space-between;margin-bottom:6px"><h3>Lesson results</h3><button class="tbtn" data-close="resPanel">Close</button></div>
+  <div id="resBody"></div>
+</aside>
 <aside class="drawer livepanel" id="livePanel" hidden aria-label="Live voting">
   <div class="bar" style="justify-content:space-between;margin-bottom:6px"><h3>Live voting</h3><button class="tbtn" data-close="livePanel">Close</button></div>
   <div id="liveBody"></div>
@@ -348,6 +401,7 @@ body.present .dock:hover, body.present .dock:focus-within, body.present .dock.wa
   <button class="dbtn" id="dPick">Pick</button>
   <button class="dbtn" id="dA" aria-label="Larger text">A+</button>
   <span class="sep"></span>
+  <button class="dbtn" id="dRes">Results</button>
   <button class="dbtn dlive" id="dLive" aria-label="Show room code"></button>
   <button class="dbtn" id="dExit">Exit (Esc)</button>
 </div>
@@ -360,7 +414,7 @@ const $$ = (s, r=document) => [...r.querySelectorAll(s)];
 const esc = s => s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const KW = new Set(['def','return','if','elif','else','for','while','in','and','or','not','True','False','None','import','from','as','pass','break','continue','try','except','lambda']);
 const BI = new Set(['print','round','len','int','str','float','range','input','abs','min','max','sum']);
-function hl(line){
+function hl(line, vc){
   const re = /(#.*$)|("[^"]*"|'[^']*')|(\b\d+(?:\.\d+)?\b)|([A-Za-z_]\w*)/g;
   let out='', last=0, m, prevDef=false;
   while((m = re.exec(line))){
@@ -372,10 +426,14 @@ function hl(line){
       if(prevDef){ out += `<span class="tk-f">${w}</span>`; prevDef=false; }
       else if(KW.has(w)){ out += `<span class="tk-k">${w}</span>`; prevDef = (w==='def'); }
       else if(BI.has(w)) out += `<span class="tk-f">${w}</span>`;
-      else out += w; }
+      else { const c = vc && vc(w); out += c ? `<span class="${c}">${w}</span>` : w; } }
     last = re.lastIndex;
   }
   return out + esc(line.slice(last));
+}
+function scopeBlock(src, id, localLines, vc){
+  return `<div class="code"${id?` id="${id}"`:''}>` + src.split('\n').map((l,i)=>{ const n=i+1; const cls = !l.trim() ? '' : localLines.includes(n) ? ' ls' : ' gs';
+    return `<div class="ln${cls}" data-l="${n}"><i>${n}</i><span>${hl(l, w=>vc(n,w))||' '}</span></div>`; }).join('') + `</div>`;
 }
 function codeBlock(src, id){
   return `<div class="code"${id?` id="${id}"`:''}>` + src.split('\n').map((l,i)=>`<div class="ln" data-l="${i+1}"><i>${i+1}</i><span>${hl(l)||' '}</span></div>`).join('') + `</div>`;
@@ -454,31 +512,61 @@ function makeEditor(host, start, opts={}){
 
 /* ---------- vote widget ---------- */
 const WIDGETS = {};
-function voteWidget(host, id, title, opts, correct, code=''){
+function voteWidget(host, id, title, opts, correct, code='', kind='q'){
   const L = i => 'ABCDEF'[i];
   host.innerHTML = `<div class="options">${opts.map((o,i)=>`
     <div class="opt-wrap"><button class="opt" data-i="${i}" aria-label="Add a hand-count vote for option ${L(i)}"><span class="letter">${L(i)}</span><pre>${esc(o)}</pre><span class="tally">0<span class="split"></span></span><span class="votebar"><i></i></span></button><button class="minus" data-i="${i}" aria-label="Remove a hand-count vote from ${L(i)}">−</button></div>`).join('')}</div>
-    <div class="bar">${correct>=0?'<button class="btn mark reveal">Reveal answer</button>':''}<button class="btn resetv">Reset votes</button><span class="status handhint">Tap an option to add a vote for each hand raised.</span></div>
+    <div class="bar">${correct>=0?'<button class="btn mark reveal">Reveal answer</button>':''}<button class="btn resetv">Reset votes</button><span class="pct"></span><span class="status handhint">Tap an option to add a vote for each hand raised.</span></div>
     <div class="livebar"><button class="btn primary lopen">Open voting on devices</button><button class="btn lclose">Close voting</button><span class="pill closed lstate">Not open</span><span class="small muted"><span class="count lcount">0</span> device votes</span></div>`;
   const manual = opts.map(()=>0); let live = opts.map(()=>0);
   const draw = () => { const tot = manual.map((m,i)=>m+live[i]); const max = Math.max(1, ...tot);
     $$('.opt', host).forEach((b,i)=>{ const t=$('.tally',b); t.firstChild.textContent = tot[i]; $('.split',t).textContent = (document.body.classList.contains('live') && manual[i]) ? `${live[i]} + ${manual[i]} hands` : ''; $('.votebar i',b).style.width = (tot[i]/max*100)+'%'; });
-    $('.lcount', host).textContent = live.reduce((a,b)=>a+b,0); };
+    $('.lcount', host).textContent = live.reduce((a,b)=>a+b,0);
+    const all = tot.reduce((a,b)=>a+b,0); $('.pct',host).textContent = (revealed && correct>=0 && all) ? `${Math.round(tot[correct]/all*100)}% correct (${tot[correct]} of ${all})` : '';
+    if(window.Results) Results.refresh(); };
+  let revealed = false;
   $$('.opt', host).forEach(b => b.onclick = () => { manual[+b.dataset.i]++; draw(); });
   $$('.minus', host).forEach(b => b.onclick = () => { const i=+b.dataset.i; manual[i]=Math.max(0,manual[i]-1); draw(); });
-  const reveal = () => $$('.opt', host).forEach((b,i)=>b.classList.add(i===correct?'right':'wrong'));
+  const reveal = () => { revealed = true; $$('.opt', host).forEach((b,i)=>b.classList.add(i===correct?'right':'wrong')); draw(); };
   if(correct>=0) $('.reveal', host).onclick = () => { reveal(); Live.reveal(id, correct); };
-  $('.resetv', host).onclick = () => { manual.fill(0); draw(); $$('.opt', host).forEach(b=>b.classList.remove('right','wrong')); Live.clearVotes(id); };
-  $('.lopen', host).onclick = () => Live.open(id, {id, title, code, options:opts, hasAnswer: correct>=0});
+  $('.resetv', host).onclick = () => { manual.fill(0); revealed = false; draw(); $$('.opt', host).forEach(b=>b.classList.remove('right','wrong')); Live.clearVotes(id); };
+  $('.lopen', host).onclick = () => Live.open(id, {id, title, code, options:opts, hasAnswer: correct>=0, kind});
   $('.lclose', host).onclick = () => Live.close();
   WIDGETS[id] = {
     setLive(arr){ live = opts.map((_,i)=>arr[i]||0); draw(); },
     setState(active, open){ const me = active===id; const st=$('.lstate',host);
       st.className = 'pill lstate ' + (me&&open?'open':'closed'); st.textContent = me&&open ? 'Open: students can vote' : me ? 'Closed' : 'Not open';
       $('.lopen',host).disabled = me&&open; $('.lclose',host).disabled = !(me&&open); },
-    redraw: draw
+    redraw: draw,
+    meta: {id, title, opts, correct, kind, host},
+    totals(){ return manual.map((m,i)=>m+live[i]); }
   };
   WIDGETS[id].setState('', false);
+}
+
+/* ---------- votes placed through the lesson ---------- */
+const CHECKIN = ['All correct','Partly done','Stuck'];
+const VOTES = {
+  'q-why':   {title:'What is the main reason programmers use functions?', opts:['It makes the program run faster','You write code once and reuse it','Every Python program must have one','It stops all errors'], correct:1},
+  'q-run':   {title:'After line 5 runs, what is stored in the variable room?', opts:['area','4, 3','12','result'], correct:2, codeRef:'AREA'},
+  'q-param': {title:'In the call area(4, 3), what are 4 and 3?', opts:['parameters','arguments','return values','local variables'], correct:1},
+  'q-scope1':{title:'What happens when line 9 runs?', opts:['It prints 15','It prints total','NameError: total is not defined','It prints 0'], correct:2, codeRef:'SCOPE'},
+  'q-scope2':{title:'Challenge: what does the last line print?', opts:['outside: 10','outside: 99','An error','outside: None'], correct:0, codeRef:'SHADOW'},
+  'q-gaps':  {title:'If line 3 said print(cost) instead of return cost, what would the last line print?', opts:['Total: 13500 won','Total: None won','An error','Total: cost won'], correct:1},
+  'c-annotate':{title:'Annotate code: how did you get on?', opts:CHECKIN, correct:-1, kind:'checkin'},
+  'c-parsons':{title:'Parsons problem: how did you get on?', opts:CHECKIN, correct:-1, kind:'checkin'},
+  'c-gaps':  {title:'Fill the gaps: how did you get on?', opts:CHECKIN, correct:-1, kind:'checkin'},
+  'c-modify':{title:'Modify: did your code pass the checks?', opts:CHECKIN, correct:-1, kind:'checkin'},
+  'c-make':  {title:'Make: did your code pass the checks?', opts:CHECKIN, correct:-1, kind:'checkin'},
+};
+function mountVotes(){
+  $$('[data-vote]').forEach(el => { const id = el.dataset.vote, v = VOTES[id]; if(!v || el.dataset.done) return; el.dataset.done = '1';
+    const code = v.codeRef ? ({AREA, SCOPE:SCOPE_SRC, SHADOW:SHADOW_SRC})[v.codeRef] : '';
+    const isCheck = v.kind === 'checkin';
+    el.className = 'panel hinge';
+    el.innerHTML = `<div class="eyebrow">${isCheck ? 'Class check-in' : 'Class vote'}</div><p class="big-q" style="font-size:${isCheck?'1.25rem':'1.45rem'}">${esc(v.title)}</p><div class="vw"></div>`;
+    voteWidget($('.vw', el), id, v.title, v.opts, v.correct, code, v.kind || 'q');
+  });
 }
 
 /* ---------- lesson content ---------- */
@@ -495,6 +583,7 @@ const STAGES = [
  {key:'predict', label:'Predict', primm:true},
  {key:'run', label:'Run', primm:true},
  {key:'investigate', label:'Investigate', primm:true},
+ {key:'scope', label:'Global vs local'},
  {key:'annotate', label:'Annotate code'},
  {key:'parsons', label:'Parsons problem'},
  {key:'gaps', label:'Fill the gaps'},
@@ -552,6 +641,7 @@ show_score(40)`)}
       <li>use <code>return</code> to send a value back from a function</li>
     </ul>
   </div>
+  <div data-vote="q-why"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>Give pairs 60 seconds of <b>think–pair–share</b> on the first program before showing the answer. Pair talk comes before any writing, because many students find reading harder than speaking.</li>
     <li>Open <b>Key words</b> and go through <i>parameter / argument / return</i> with the Korean translations. Leave it open during the Predict stage for Support students.</li>
@@ -592,7 +682,7 @@ $('#st-run').innerHTML = `
   <div class="stage-head"><div><div class="eyebrow">PRIMM · Run</div><h2 id="h-run">Run it. Was your prediction right?</h2></div>
   <p class="lead">Run the code, then step through it line by line to see <i>why</i> it prints what it does.</p></div>
   <div class="cols">
-    <div class="panel">${codeBlock(AREA,'traceCode')}
+    <div class="panel"><div class="scopekey"><span class="chip g">global · main program</span><span class="chip l">local · inside area()</span></div>${scopeBlock(AREA,'traceCode',[1,2,3],(n,w)=>({length:'v-l',width:'v-l',result:'v-l',room:'v-g'})[w]||null)}
       <div class="bar"><button class="btn primary" id="runArea">▶ Run program</button></div>
       <div class="out-label">Output</div><pre class="out" id="runOut"></pre>
     </div>
@@ -600,14 +690,15 @@ $('#st-run').innerHTML = `
       <h3>Step through (trace)</h3>
       <div class="bar"><button class="btn" id="tBack">← Back</button><button class="btn mark" id="tStep">Next step →</button><button class="btn" id="tReset">Restart</button><span class="status" id="tPos"></span></div>
       <div class="trace">
-        <div><div class="out-label">Main program variables</div><table class="vars" id="tG"></table></div>
-        <div><div class="out-label">Inside area() (local)</div><table class="vars" id="tL"></table></div>
+        <div><div class="out-label g">Global variables · main program</div><table class="vars g" id="tG"></table></div>
+        <div><div class="out-label l">Local variables · inside area()</div><table class="vars l" id="tL"></table></div>
       </div>
       <div class="out-label">Output so far</div><pre class="out" id="tOutp"></pre>
       <div class="out-label">What is happening</div>
       <div class="say" id="tSay" aria-live="polite">Press <b>Next step</b> to follow Python line by line.</div>
     </div>
   </div>
+  <div data-vote="q-run"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>Go back to the class vote on the Predict stage and compare it with the actual output.</li>
     <li>Step through with the class. Before each click, ask "Which line will Python go to next?" Mini whiteboards work well here.</li>
@@ -651,11 +742,97 @@ $('#st-investigate').innerHTML = `
       <p class="small muted">Change the level (Support, Core or Stretch) at the top to see different questions.</p></div>
     <div class="panel"><h3>Test your ideas</h3><div id="invEd"></div></div>
   </div>
+  <div data-vote="q-param"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>Start with the <b>Support</b> questions as a whole class (cold call with Pick a student), then switch to Core. Stretch students can try their questions in the editor on their own devices.</li>
     <li>Ask students to answer in full sentences using the key words: "The <u>parameter</u> is… The <u>argument</u> is…".</li>
     <li>Live check: "Show me on your whiteboard: which line runs first?" (answer: line 5).</li></ul></div>`;
 makeEditor($('#invEd'), AREA, {id:'invCode'});
+
+/* 4a. global vs local */
+const SCOPE_SRC = `bonus = 5
+
+def add_bonus(score):
+    total = score + bonus
+    return total
+
+result = add_bonus(10)
+print(result)
+print(total)`;
+const SHADOW_SRC = `x = 10
+
+def change():
+    x = 99
+    print("inside:", x)
+
+change()
+print("outside:", x)`;
+const scopeVC = (n, w) => ({bonus:'v-g', result:'v-g', score:'v-l'})[w] || (w==='total' ? (n===9 ? 'v-e' : 'v-l') : null);
+const shadowVC = (n, w) => w==='x' ? ((n===4||n===5) ? 'v-l' : 'v-g') : null;
+const SORT = [
+  {name:'bonus', a:'g', why:'Global: it is created in the main program (line 1), so it can be read anywhere, even inside the function.'},
+  {name:'score', a:'l', why:'Local: it is a parameter. Parameters only exist inside their function.'},
+  {name:'total', a:'l', why:'Local: it is created inside the function (line 4) and disappears after return. That is why line 9 fails.'},
+  {name:'result', a:'g', why:'Global: it is created in the main program (line 7).'},
+  {name:'add_bonus', a:'g', why:'Global: the function name itself is defined in the main program.', lv:'stretch'},
+];
+$('#st-scope').innerHTML = `
+  <div class="stage-head"><div><div class="eyebrow">Scope</div><h2 id="h-scope">Global vs local variables</h2></div>
+  <p class="lead">Where a variable is created decides where it can be used. This is called its <b>scope</b>.</p></div>
+  <div class="rules2">
+    <div class="rule g"><h3>Global variable · 전역 변수</h3><p>Created in the <b>main program</b>, outside any function. It can be <b>read anywhere</b> in the program.</p><p class="small muted" style="margin-top:6px">Like the school noticeboard: everyone can read it.</p></div>
+    <div class="rule l"><h3>Local variable · 지역 변수</h3><p>Created <b>inside a function</b>, including its parameters. It only exists <b>while the function runs</b> and disappears after <code>return</code>.</p><p class="small muted" style="margin-top:6px">Like notes on your own desk: they're cleared at the end of the lesson.</p></div>
+  </div>
+  <div class="cols">
+    <div class="panel" id="scopePanel">
+      <div class="bar" style="justify-content:space-between"><div class="scopekey"><span class="chip g">global · main program</span><span class="chip l">local · inside add_bonus()</span></div><button class="btn" id="scopeToggle" aria-pressed="true">Hide colours</button></div>
+      ${scopeBlock(SCOPE_SRC, 'scopeCode', [3,4,5], scopeVC)}
+      <p class="small muted">Solid underline = global. Dotted underline = local. Wavy red = the error on line 9.</p>
+      <div class="bar"><button class="btn primary" id="scopeRun">▶ Run it</button></div>
+      <pre class="out" id="scopeOut" hidden></pre>
+    </div>
+    <div class="panel">
+      <h3>Sort the variables</h3>
+      <p class="small">Decide whether each variable is <b style="color:var(--glob)">global</b> or <b style="color:var(--loc)">local</b>, then check.</p>
+      <p data-show="support" class="small"><span class="tier support">Support</span>Ask: <i>was it created inside the <code>def</code> block (indented), or outside?</i> Parameters count as inside.</p>
+      <p data-show="stretch" class="small"><span class="tier stretch">Stretch</span>There is an extra name to sort. Be ready to explain it.</p>
+      <div id="sortRows"></div>
+      <div class="bar" style="margin-top:8px"><button class="btn mark" id="sortCheck">✓ Check</button><button class="btn" id="sortReset">Start again</button></div>
+      <div id="sortFb" aria-live="polite"></div>
+    </div>
+  </div>
+  <div data-vote="q-scope1"></div>
+  <div class="cols">
+    <div class="panel">
+      <h3>Challenge: same name, different scope</h3>
+      ${scopeBlock(SHADOW_SRC, 'shadowCode', [3,4,5], shadowVC)}
+      <details class="q"><summary>Why?</summary><div class="ans"><code>x = 99</code> inside the function makes a <b>new local</b> <code>x</code>. The global <code>x</code> is not changed, so the last line prints <code>outside: 10</code>. Good practice is to pass values in as parameters and send results back with <code>return</code>, rather than relying on global variables.</div></details>
+      <div class="bar"><button class="btn primary" id="shadowRun">▶ Run it</button></div>
+      <pre class="out" id="shadowOut" hidden></pre>
+    </div>
+    <div data-vote="q-scope2"></div>
+  </div>
+  <div class="notes"><h3>Teacher notes</h3><ul>
+    <li>Use the noticeboard / desk analogy. Point at the coloured bars: the orange block is the function's "desk".</li>
+    <li>Try <b>Hide colours</b> first and ask students to point out the global and local variables, then show the colours to check.</li>
+    <li>Common misconception: students think <code>total</code> still exists after the function has run (line 9). Run it to show the NameError.</li>
+    <li>Link back to the Run stage trace table: the blue table is global, the orange table is local and empties after <code>return</code>.</li></ul></div>`;
+function sortSetup(){
+  const lv = document.body.dataset.level;
+  const items = SORT.filter(x => !x.lv || x.lv === lv);
+  $('#sortRows').innerHTML = items.map(x => `<div class="sortrow" data-n="${x.name}"><code>${x.name}</code><div class="seg" role="group" aria-label="Scope of ${x.name}"><button data-s="g" aria-pressed="false">Global</button><button data-s="l" aria-pressed="false">Local</button></div><span class="why"></span></div>`).join('');
+  $$('#sortRows .seg button').forEach(b => b.onclick = () => { $$('button', b.parentElement).forEach(x => x.setAttribute('aria-pressed', x===b)); const r=b.closest('.sortrow'); r.classList.remove('ok','bad'); $('.why',r).textContent=''; });
+  $('#sortFb').innerHTML = '';
+}
+$('#sortCheck').onclick = () => { let r=0, n=0;
+  $$('#sortRows .sortrow').forEach(row => { n++; const it = SORT.find(x=>x.name===row.dataset.n); const p = $('button[aria-pressed="true"]', row); row.classList.remove('ok','bad');
+    if(!p){ $('.why',row).textContent = 'Choose global or local.'; return; }
+    const ok = p.dataset.s === it.a; row.classList.add(ok?'ok':'bad'); if(ok) r++; $('.why',row).textContent = ok ? it.why : 'Not quite. Look at where it is created.'; });
+  $('#sortFb').innerHTML = `<div class="feedback ${r===n?'good':r>=n/2?'mid':'bad'}">${r} of ${n} correct${r===n?'!':''}</div>`; };
+$('#sortReset').onclick = sortSetup;
+$('#scopeToggle').onclick = () => { const on = $('#scopeToggle').getAttribute('aria-pressed') !== 'true'; $('#scopeToggle').setAttribute('aria-pressed', on); $('#scopeToggle').textContent = on ? 'Hide colours' : 'Show colours'; $('#st-scope').classList.toggle('noscope', !on); };
+$('#scopeRun').onclick = async () => { const o=$('#scopeOut'); o.hidden=false; o.textContent='Running…'; showResult(o, await runPython(SCOPE_SRC)); };
+$('#shadowRun').onclick = async () => { const o=$('#shadowOut'); o.hidden=false; o.textContent='Running…'; showResult(o, await runPython(SHADOW_SRC)); };
 
 /* 4b. annotate */
 const ANN_CODE = `def average(a, b, c):
@@ -703,6 +880,7 @@ $('#st-annotate').innerHTML = `
     <p>In Python, annotations are written as <b>comments</b> that start with <code>#</code>. Python ignores them, but they help people understand your code. Add a comment to each line, then run it to check the program still works.</p>
     <div id="annEd"></div>
   </div>
+  <div data-vote="c-annotate"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>At the front: pick a student to choose an annotation, then ask the class "Which line? Thumbs up if you agree." Ask them to point to the words in the code that gave it away.</li>
     <li>This checks <b>reading</b> of both English and code, so it suits the low reading levels in all classes. Pre-teach <i>local variable</i>, <i>arguments</i> and <i>calls</i>.</li>
@@ -773,6 +951,7 @@ $('#st-parsons').innerHTML = `
   <div class="bar"><button class="btn mark" id="pCheck">✓ Check order</button><button class="btn primary" id="pRun">▶ Run my program</button><button class="btn" id="pShuffle">Start again</button></div>
   <div id="pFb" aria-live="polite"></div>
   <pre class="out" id="pOut" hidden></pre>
+  <div data-vote="c-parsons"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>Do this at the front: a pair tells you which line comes next, you tap it, and the class agrees or challenges ("Thumbs up if you agree").</li>
     <li>The level can be changed during the task. Changing it resets the puzzle.</li>
@@ -860,6 +1039,7 @@ bill = ${G(4)}(<span class="tk-n">4500</span>, <span class="tk-n">3</span>)
       </ul>
     </div>
   </div>
+  <div class="cols"><div data-vote="q-gaps"></div><div data-vote="c-gaps"></div></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>Answers: <code>def</code>, <code>quantity</code>, <code>*</code>, <code>return</code>, <code>total_price</code>.</li>
     <li>At the front: pick a student to choose a gap and give its word, then ask the class "Agree or disagree? Why?".</li>
@@ -905,6 +1085,7 @@ $('#st-modify').innerHTML = `
     </div>
     <div class="panel"><div id="modEd"></div></div>
   </div>
+  <div data-vote="c-modify"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>All three tasks change the same starting code, so the whole class can compare solutions at the end.</li>
     <li>Change the level at the top to show each group's task and tests. <b>Check my code</b> uses the tests for the level currently selected.</li>
@@ -960,6 +1141,7 @@ $('#st-make').innerHTML = `
     </div>
     <div class="panel"><div id="makeEd"></div></div>
   </div>
+  <div data-vote="c-make"></div>
   <div class="notes"><h3>Teacher notes</h3><ul>
     <li>Suggested time is 12–15 minutes. Use the timer.</li>
     <li>Circulate and check in with the Support group within the first 3 minutes.</li>
@@ -989,6 +1171,41 @@ voteWidget($('#ex3'), 'ex3', 'What does this program print?', ['6','12','9','An 
 print(double(double(3)))`);
 voteWidget($('#exConf'), 'conf', 'How confident do you feel about functions now?', ['1 · Not yet','2','3','4','5 · Very confident'], -1);
 
+mountVotes();
+
+/* ---------- results tracker ---------- */
+const Results = (() => {
+  const order = () => Object.values(WIDGETS).map(w => ({w, st: STAGES.findIndex(s => w.meta.host.closest('#st-'+s.key))})).sort((a,b)=>a.st-b.st);
+  function html(){
+    const rows = order(); let sumPct=0, nq=0; const lines=[];
+    const body = rows.map(({w,st}) => { const m=w.meta, t=w.totals(), all=t.reduce((a,b)=>a+b,0), stage=STAGES[st] ? STAGES[st].label : '';
+      if(m.kind==='checkin'){
+        lines.push(`${stage} check-in: ${t.map((c,i)=>CHECKIN[i]+' '+c).join(', ')}`);
+        return `<div class="res-row${all?'':' empty'}"><span class="t">${esc(m.title)}</span><div class="res-bar">${t.map((c,i)=>`<i class="ci${i}" style="width:${all?c/all*100:0}%"></i>`).join('')}</div><span class="m">${all ? t.map((c,i)=>`${CHECKIN[i]}: ${c}`).join(' · ') : 'No responses yet'}</span></div>`; }
+      if(m.correct < 0){ lines.push(`${m.title}: ${t.join(' / ')}`);
+        return `<div class="res-row${all?'':' empty'}"><span class="t">${esc(m.title)}</span><span class="m">${all ? t.map((c,i)=>`${esc(m.opts[i])}: ${c}`).join(' · ') : 'No responses yet'}</span></div>`; }
+      const c = t[m.correct], pct = all ? Math.round(c/all*100) : 0; if(all){ sumPct += pct; nq++; }
+      lines.push(`${stage} – ${m.title}: ${all?pct+'% correct ('+c+'/'+all+')':'no responses'}`);
+      return `<div class="res-row${all?'':' empty'}"><span class="t">${esc(stage)} · ${esc(m.title)}</span><div class="res-bar"><i class="c" style="width:${pct}%"></i><i class="w" style="width:${all?100-pct:0}%"></i></div><span class="m">${all ? `${pct}% correct · ${c} of ${all}` : 'No responses yet'}</span></div>`;
+    }).join('');
+    const avg = nq ? Math.round(sumPct/nq) : null;
+    Results.text = `Python Functions lesson results (${new Date().toLocaleDateString()})\n` + (avg!==null?`Average correct: ${avg}% across ${nq} questions\n`:'') + lines.join('\n');
+    return `<p class="small muted">Includes device votes and hand counts. Percentages show once a question has votes.</p>
+      <p style="margin:8px 0"><span class="res-sum">${avg===null?'–':avg+'%'}</span> <span class="muted">average correct${nq?` across ${nq} question${nq>1?'s':''}`:''}</span></p>
+      ${body}<div class="bar" style="margin-top:10px"><button class="btn" id="resCopy">Copy summary</button><span class="status" id="resMsg"></span></div>`;
+  }
+  let t=null;
+  return {
+    text:'',
+    refresh(){ if($('#resPanel').hidden) return; clearTimeout(t); t=setTimeout(()=>{ const sc=$('#resPanel').scrollTop; $('#resBody').innerHTML = html(); $('#resPanel').scrollTop=sc; bindCopy(); }, 60); },
+    show(){ $('#resBody').innerHTML = html(); bindCopy(); }
+  };
+  function bindCopy(){ const b=$('#resCopy'); if(b) b.onclick = async () => { try{ await navigator.clipboard.writeText(Results.text); $('#resMsg').textContent='Copied.'; }catch(e){ $('#resMsg').textContent='Copy not allowed here. Select the text instead.'; } }; }
+})();
+window.Results = Results;
+function toggleRes(){ const d=$('#resPanel'); const show=d.hidden; ['gloss','picker','livePanel'].forEach(x=>$('#'+x).hidden=true); ['#glossBtn','#pickBtn'].forEach(x=>$(x).setAttribute('aria-pressed',false)); d.hidden=!show; $('#resBtn').setAttribute('aria-pressed',show); if(show) Results.show(); }
+$('#resBtn').onclick = toggleRes; $('#dRes').onclick = toggleRes;
+
 /* ---------- navigation ---------- */
 let cur = 0;
 $('#steps').innerHTML = STAGES.map((s,i)=>`<button class="step${s.primm?' primm':''}" data-i="${i}"><b>${i+1}</b>${s.label}</button>`).join('');
@@ -1009,7 +1226,7 @@ document.addEventListener('keydown', e=>{ if(e.key==='Escape' && document.body.c
 function setLevel(lv){
   document.body.dataset.level = lv;
   $$('.seg button').forEach(b=>b.setAttribute('aria-pressed', b.dataset.lv===lv));
-  pSetup(); aSetup(); makeEd.set(MAKE_START[lv]);
+  pSetup(); aSetup(); sortSetup(); makeEd.set(MAKE_START[lv]);
 }
 $$('.seg button').forEach(b=>b.onclick=()=>setLevel(b.dataset.lv));
 
@@ -1018,7 +1235,7 @@ let tLeft=180, tRun=null;
 const tDraw=()=>{ const m=Math.floor(tLeft/60), s=tLeft%60; const txt=`${m}:${String(s).padStart(2,'0')}`; ['#tOut','#dTime'].forEach(id=>{ const o=$(id); o.textContent=txt; o.classList.toggle('done', tLeft===0); }); };
 $$('.timer [data-min]').forEach(b=>b.onclick=()=>{ clearInterval(tRun); tRun=null; tLeft=+b.dataset.min*60; $('#tGo').textContent='▶'; tDraw(); });
 $('#tGo').onclick=()=>{ if(tRun){ clearInterval(tRun); tRun=null; $('#tGo').textContent='▶'; return; } if(tLeft===0) return; $('#tGo').textContent='❚❚'; tRun=setInterval(()=>{ tLeft--; tDraw(); if(tLeft<=0){ clearInterval(tRun); tRun=null; $('#tGo').textContent='▶'; } },1000); };
-function toggleDrawer(id, btn){ const d=$('#'+id); d.hidden=!d.hidden; btn.setAttribute('aria-pressed', !d.hidden); ['gloss','picker','livePanel'].filter(x=>x!==id).forEach(x=>{ $('#'+x).hidden=true; }); $('#glossBtn').setAttribute('aria-pressed', !$('#gloss').hidden); $('#pickBtn').setAttribute('aria-pressed', !$('#picker').hidden); }
+function toggleDrawer(id, btn){ const d=$('#'+id); d.hidden=!d.hidden; btn.setAttribute('aria-pressed', !d.hidden); ['gloss','picker','livePanel','resPanel'].filter(x=>x!==id).forEach(x=>{ $('#'+x).hidden=true; }); $('#glossBtn').setAttribute('aria-pressed', !$('#gloss').hidden); $('#pickBtn').setAttribute('aria-pressed', !$('#picker').hidden); }
 $('#glossBtn').onclick=()=>toggleDrawer('gloss',$('#glossBtn'));
 $('#pickBtn').onclick=()=>toggleDrawer('picker',$('#pickBtn'));
 $$('[data-close]').forEach(b=>b.onclick=()=>{ $('#'+b.dataset.close).hidden=true; $('#glossBtn').setAttribute('aria-pressed',false); $('#pickBtn').setAttribute('aria-pressed',false); });
@@ -1032,7 +1249,7 @@ let fs=17; $('#aPlus').onclick=()=>{ fs=Math.min(26,fs+1); document.documentElem
 
 /* ---------- live voting (Firebase) ---------- */
 const Live = (() => {
-  const st = { on:false, code:'', db:null, uid:'', active:'', open:false, joined:0, refs:[] };
+  const st = { on:false, code:'', db:null, uid:'', active:'', open:false, joined:0, refs:[], showLive:false };
   const configured = () => !!(window.firebase && window.FIREBASE_CONFIG && FIREBASE_CONFIG.apiKey && !/PASTE/i.test(FIREBASE_CONFIG.apiKey) && FIREBASE_CONFIG.databaseURL);
   const body = () => $('#liveBody');
   const joinURL = () => new URL('vote.html', location.href).href.split('?')[0] + '?room=' + st.code;
@@ -1045,10 +1262,12 @@ const Live = (() => {
     body().innerHTML = `<p class="small muted" style="text-align:center">Students go to the link or scan the code</p>
       <div class="roomcode">${st.code}</div><div class="qr" id="qr"></div><div class="joinurl">${esc(joinURL())}</div>
       <p style="text-align:center;margin-top:8px"><b id="joinedN">${st.joined}</b> devices joined</p>
+      <label style="display:flex;gap:10px;align-items:flex-start;margin-top:10px;font-size:.92rem"><input type="checkbox" id="showLive" ${st.showLive?'checked':''} style="margin-top:4px;width:18px;height:18px"><span><b>Show live results on students' devices</b><br><span class="muted small">Off: students only see how many votes are in until you reveal. On: they see the bars fill up as votes arrive (can make students copy the majority).</span></span></label>
       <p class="small muted" style="margin-top:8px">On each vote question, press <b>Open voting on devices</b>. Only one question is open at a time. Hand counts you tap are added to the device votes.</p>
       <div class="bar" style="margin-top:10px;justify-content:center"><button class="btn" id="liveEnd">End session</button></div>`;
     try{ new QRCode($('#qr'), {text: joinURL(), width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M}); }catch(e){ $('#qr').remove(); }
     $('#liveEnd').onclick = end;
+    $('#showLive').onchange = e => { st.showLive = e.target.checked; upd({showLive: st.showLive}); };
   }
   const makeCode = () => { const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789'; let c=''; for(let i=0;i<5;i++) c+=A[Math.floor(Math.random()*A.length)]; return c; };
   async function start(){
@@ -1059,7 +1278,7 @@ const Live = (() => {
       st.uid = cred.user.uid; st.db = firebase.database();
       let code='';
       for(let i=0;i<6;i++){ code = makeCode(); const snap = await st.db.ref('rooms/'+code).get(); if(!snap.exists()) break; }
-      await st.db.ref('rooms/'+code).set({ owner: st.uid, created: Date.now(), active:'', open:false, reveal:-1 });
+      await st.db.ref('rooms/'+code).set({ owner: st.uid, created: Date.now(), active:'', open:false, reveal:-1, showLive: st.showLive });
       st.code = code; st.on = true; document.body.classList.add('live'); $('#liveBtn').setAttribute('aria-pressed', true);
       const vref = st.db.ref(`rooms/${code}/votes`);
       const vcb = vref.on('value', snap => { const v = snap.val() || {}; Object.keys(WIDGETS).forEach(q => { const arr=[0,0,0,0,0,0]; Object.values(v[q]||{}).forEach(x => { if(typeof x==='number' && arr[x]!==undefined) arr[x]++; }); WIDGETS[q].setLive(arr); }); });
@@ -1082,11 +1301,11 @@ const Live = (() => {
     panel, get on(){ return st.on; },
     open(id, q){ if(!st.on){ togglePanel(true); return; } st.active=id; st.open=true; states(); upd({active:id, open:true, reveal:-1, question:q}); },
     close(){ if(!st.on) return; st.open=false; states(); upd({open:false}); },
-    reveal(id, idx){ if(!st.on || st.active!==id) return; st.open=false; states(); upd({open:false, reveal:idx}); },
-    clearVotes(id){ if(!st.on) return; st.db.ref(`rooms/${st.code}/votes/${id}`).remove().catch(()=>{}); if(st.active===id){ upd({reveal:-1}); } }
+    reveal(id, idx){ if(!st.on) return; const o={['answers/'+id]: idx}; if(st.active===id){ st.open=false; states(); o.open=false; o.reveal=idx; } upd(o); },
+    clearVotes(id){ if(!st.on) return; st.db.ref(`rooms/${st.code}/votes/${id}`).remove().catch(()=>{}); const o={['answers/'+id]: null}; if(st.active===id) o.reveal=-1; upd(o); }
   };
 })();
-function togglePanel(force){ const d=$('#livePanel'); const show = force===undefined ? d.hidden : force; if(show){ ['gloss','picker'].forEach(x=>$('#'+x).hidden=true); $('#glossBtn').setAttribute('aria-pressed',false); $('#pickBtn').setAttribute('aria-pressed',false); Live.panel(); } d.hidden = !show; }
+function togglePanel(force){ const d=$('#livePanel'); const show = force===undefined ? d.hidden : force; if(show){ ['gloss','picker','resPanel'].forEach(x=>$('#'+x).hidden=true); $('#resBtn').setAttribute('aria-pressed',false); $('#glossBtn').setAttribute('aria-pressed',false); $('#pickBtn').setAttribute('aria-pressed',false); Live.panel(); } d.hidden = !show; }
 $('#liveBtn').onclick = () => togglePanel();
 $('#dLive').onclick = () => togglePanel();
 window.addEventListener('beforeunload', e => { if(Live.on){ e.preventDefault(); e.returnValue=''; } });
